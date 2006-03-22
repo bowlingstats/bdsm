@@ -1,0 +1,136 @@
+<html>
+<body>
+<center>Bowling Database/Statistics Management</center>
+<p>
+The guts of the project is most definately the database, so I'll start by showing you it's basic shape.  Next I'll move on to layout the scripts that will make up the backbone of the project and what functionality they will provide.
+</p>
+Database Layout:
+<table border="1">
+	<tr>
+		<td>Table Name</td>
+		<td>Column</td>
+		<td>Type</td>
+		<td>Description</td>
+	</tr>
+	<tr>
+		<td>Users</td>
+		<td>uid</td>
+		<td>int(4)</td>
+		<td>unique ID of a user, auto increments</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>username</td>
+		<td>char(8)</td>
+		<td>username of a bowler on this system</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>password</td>
+		<td>char(64)</td>
+		<td>password of a bowler</td>
+	</tr>
+	<tr>
+		<td>games</td>
+		<td>game_id</td>
+		<td>int(4)</td>
+		<td>id of games played.  used to keep games straight in other tables</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>player_id</td>
+		<td>int(4)</td>
+		<td>same value as users.uid, used to track individual bowler scores in a game</td>
+	</tr>
+	<tr>
+		<td>scores</td>
+		<td>game_id</td>
+		<td>int(4)</td>
+		<td>same value as games.game_id</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>player_id</td>
+		<td>int(4)</td>
+		<td>same value as games.player_id</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>frame</td>
+		<td>int(2)</td>
+		<td>which frame is this for player_id in game_id</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>b1</td>
+		<td>int(2)</td>
+		<td>Default not null.  Score of ball 1 in this frame</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>b2</td>
+		<td>int(2)</td>
+		<td>Default null.  Score of ball 2 in this frame</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>b3</td>
+		<td>int(2)</td>
+		<td>Default null.  Score of ball 3 in this frame</td>
+	</tr>
+	<tr>
+		<td>pinfall</td>
+		<td>game_id</td>
+		<td>int(4)</td>
+		<td>see scores.game_id</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>player_id</td>
+		<td>int(4)</td>
+		<td>see scores.player_id</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>frame</td>
+		<td>int(2)</td>
+		<td>see scores.frame</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>b1</td>
+		<td>char(32)</td>
+		<td>Is a comma seperated list of the pins still standing after the first ball.</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>b2</td>
+		<td>ditto</td>
+		<td>ditto</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>b3</td>
+		<td>ditto</td>
+		<td>ditto</td>
+	</tr>
+</table>
+<p>
+Scripts:
+<p>
+
+<b>game</b>: Takes a value for how many players are in this game.  Creates a HTML table row with the scoring form inside it.  The form submits to <b>gamesubmit</b>.  The form is verified and scored by JavaScript.
+<p>
+<b>gamesubmit</b>: Inserts, updates, or deletes infromation into the database.
+<p>
+<b>gameedit</b>: Gathers game info from the database by game_id, fills the values for an HTML form.  Submits to 
+<b>gamesubmit</b>.  It also offers the option of deleting the game being edited.
+<p>
+<b>result</b>: Takes a value game_id and displays that game in HTML tables.
+<p>
+<b>statistics</b>: Will probably be written in PERL, for it's heavy lifting.  Querys the database, finding statistics for strikes, spares, spare conversions, etc.
+<p>
+<b>standings</b>: Ranks users by averages, total pinfall, maybe other criteria.
+<p>
+</body>
+</html>
