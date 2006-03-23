@@ -1,4 +1,16 @@
 <html>
+<head>
+<style type="text/css">
+tr.head{
+	font-weight: bold;
+	font-size: large;
+}
+td.table{
+	font-weight: bold;
+	text-align: right;
+}
+</style>
+</head>
 <body>
 <center>Bowling Database/Statistics Management</center>
 <p>
@@ -6,20 +18,20 @@ The guts of the project is most definately the database, so I'll start by showin
 </p>
 Database Layout:
 <table border="1">
-	<tr>
+	<tr class="head">
 		<td>Table Name</td>
 		<td>Column</td>
 		<td>Type</td>
 		<td>Description</td>
 	</tr>
 	<tr>
-		<td>Users</td>
+		<td class="table">Users</td>
 		<td>uid</td>
 		<td>int(4)</td>
 		<td>unique ID of a user, auto increments</td>
 	</tr>
 	<tr>
-		<td></td>
+		<td class="table"></td>
 		<td>username</td>
 		<td>char(8)</td>
 		<td>username of a bowler on this system</td>
@@ -31,7 +43,7 @@ Database Layout:
 		<td>password of a bowler</td>
 	</tr>
 	<tr>
-		<td>games</td>
+		<td class="table">games</td>
 		<td>game_id</td>
 		<td>int(4)</td>
 		<td>id of games played.  used to keep games straight in other tables</td>
@@ -43,7 +55,7 @@ Database Layout:
 		<td>same value as users.uid, used to track individual bowler scores in a game</td>
 	</tr>
 	<tr>
-		<td>scores</td>
+		<td class="table">scores</td>
 		<td>game_id</td>
 		<td>int(4)</td>
 		<td>same value as games.game_id</td>
@@ -79,7 +91,7 @@ Database Layout:
 		<td>Default null.  Score of ball 3 in this frame</td>
 	</tr>
 	<tr>
-		<td>pinfall</td>
+		<td class="table">pinfall</td>
 		<td>game_id</td>
 		<td>int(4)</td>
 		<td>see scores.game_id</td>
@@ -99,20 +111,20 @@ Database Layout:
 	<tr>
 		<td></td>
 		<td>b1</td>
-		<td>char(32)</td>
+		<td>char(20)</td>
 		<td>Is a comma seperated list of the pins still standing after the first ball.</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>b2</td>
-		<td>ditto</td>
-		<td>ditto</td>
+		<td>char(20)</td>
+		<td>Is a comma seperated list of the pins still standing after the second ball.</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>b3</td>
-		<td>ditto</td>
-		<td>ditto</td>
+		<td>char(32)</td>
+		<td>Is a comma seperated list of the pins still standing after the third ball.</td>
 	</tr>
 </table>
 <p>
