@@ -10,16 +10,28 @@
 A brief intro to Subversion(SVN)<p/>
 Subversion is a tool that simplifies collaberation on a software project.  You use a SVN client to "check out" files from a SVN server.  You edit the local files, and when you're done doing that you will use your SVN client to "commit" the changes to the server.  The server logs all the changes and at any point you can check out code from previous revisions.<p/>
 
-To familiarize you with how to use SVN on this project I'm going to give you a short list of things to do:
-
+To familiarize you with how to use SVN on this project I'm going to give you a short list of things to do.<p/>
+Check out a copy of the SVN repository to work on:
 <ol>
 	<li>Download <a href="http://tortoisesvn.sourceforge.net/">TortoiseSVN</a>, and install it.  It will ask you to restart, you'll need to.  Now when you right-click you'll be able to access SVN options for folders and files.</li>
 	<li>Create a folder where you'd like to check the <i>bdsm project</i> files into. <b>Note:</b> It is important that this folder be empty, or you will wind up adding unwanted files into the SVN repository.</li>
 	<li>Right-click on the folder you have created.  Choose <i>SVN Checkout...</i></li>
 	<li>There are several fields here for the <i>URL of repository</i> enter <i>https://svn.sourceforge.net/svnroot/bdsm/</i> and for <i>Checkout Directory</i> there are two checkboxes, leave them blank. For the <i>Revision</i> options we want to select <i>HEAD</i>.  Click <i>Ok</i></li>
 	<li>This may take a moment, it will mention what files it grabbed.  Go ahead and close this window once it's done.(click ok)</li>
-	<li></li>
+</ol>
+Modify and commit files back to the SVN repository:
+<ol>
+	<li>Open the folder you made you'll see two folders <i>roadmap</i> and <i>test</i>.  Open the <i>test</i> folder.</li>
+	<li>Make a new text file <b>yourname.txt</b> where "yourname" is your name.</li>
+	<li>Write something in <b>yourname.txt</b>, and save those changes.</li>
+	<li>Right click on <b>yourname.txt</b>, under <i>TortoiseSVN</i> choose <i>add...</i>  This adds the file to files that should be uploaded to the online SVN repository.</li>
+	<li>Right click on <b>yourname.txt</b>, and click on <i>SVN Commit</i>.</li>
+	<li>In the window that comes up it gives you a short review of files to be "commited," that is uploaded.</li>
+	<li>You will be prompted for your SourceForge username and password.(The very first time you do this you'll be asked to accept a certificate.  Please do so.)</li>
+	<li>It will show you a short dialog about the status of the files you have commited. Click <i>ok</i>.</li>
 </ol>
 
+If you were to delete the contents of the folder you created you would be able to check the files out again and all would be as you left it.<p/>
+<b>It is vital that before you start editing that you check out a fresh copy of the SVN repository</b>, this way you will not obliterate updates another developer may have made when you commit your work.  This is easily accomplished by right clicking on the folder you created, and choosing <i>SVN Update</i>.  There is much more robust documentation out there than this, but this should help get your feet wet.
 </body>
 </html>
