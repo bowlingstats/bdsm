@@ -27,103 +27,108 @@ Database Layout:
 	<tr>
 		<td class="table">Users</td>
 		<td>uid</td>
-		<td>int(4)</td>
+		<td>smallint(4)</td>
 		<td>unique ID of a user, auto increments</td>
 	</tr>
 	<tr>
 		<td class="table"></td>
 		<td>username</td>
-		<td>char(8)</td>
+		<td>varchar(8)</td>
 		<td>username of a bowler on this system</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>password</td>
-		<td>char(64)</td>
+		<td>varchar(64)</td>
 		<td>password of a bowler</td>
+	</tr>
+		<td></td>
+		<td>name</td>
+		<td>varvarchar(32)</td>
+		<td>a handle for the bowler</td>
 	</tr>
 	<tr>
 		<td class="table">games</td>
 		<td>game_id</td>
-		<td>int(4)</td>
+		<td>smallint(4)</td>
 		<td>id of games played.  used to keep games straight in other tables</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>player_id</td>
-		<td>int(4)</td>
+		<td>small(4)</td>
 		<td>same value as users.uid, used to track individual bowler scores in a game</td>
 	</tr>
 	<tr>
 		<td class="table">scores</td>
 		<td>game_id</td>
-		<td>int(4)</td>
+		<td>small(4)</td>
 		<td>same value as games.game_id</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>player_id</td>
-		<td>int(4)</td>
+		<td>smallint(4)</td>
 		<td>same value as games.player_id</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>frame</td>
-		<td>int(2)</td>
+		<td>smallint(2)</td>
 		<td>which frame is this for player_id in game_id</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>b1</td>
-		<td>int(2)</td>
+		<td>smallint(2)</td>
 		<td>Default not null.  Score of ball 1 in this frame</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>b2</td>
-		<td>int(2)</td>
+		<td>smallint(2)</td>
 		<td>Default null.  Score of ball 2 in this frame</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>b3</td>
-		<td>int(2)</td>
+		<td>smallint(2)</td>
 		<td>Default null.  Score of ball 3 in this frame</td>
 	</tr>
 	<tr>
 		<td class="table">pinfall</td>
 		<td>game_id</td>
-		<td>int(4)</td>
+		<td>smallint(4)</td>
 		<td>see scores.game_id</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>player_id</td>
-		<td>int(4)</td>
+		<td>smallint(4)</td>
 		<td>see scores.player_id</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>frame</td>
-		<td>int(2)</td>
+		<td>smallint(2)</td>
 		<td>see scores.frame</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>b1</td>
-		<td>char(20)</td>
+		<td>varchar(20)</td>
 		<td>Is a comma seperated list of the pins still standing after the first ball.</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>b2</td>
-		<td>char(20)</td>
+		<td>varchar(20)</td>
 		<td>Is a comma seperated list of the pins still standing after the second ball.</td>
 	</tr>
 	<tr>
 		<td></td>
 		<td>b3</td>
-		<td>char(32)</td>
+		<td>varchar(32)</td>
 		<td>Is a comma seperated list of the pins still standing after the third ball.</td>
 	</tr>
 </table>
