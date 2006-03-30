@@ -30,6 +30,7 @@ CREATE TABLE `games` (
 
 /*!40000 ALTER TABLE `games` DISABLE KEYS */;
 LOCK TABLES `games` WRITE;
+INSERT INTO `games` VALUES (1,1),(1,2);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `games` ENABLE KEYS */;
 
@@ -44,8 +45,7 @@ CREATE TABLE `pinfall` (
   `frame` smallint(2) NOT NULL default '0',
   `b1` varchar(20) NOT NULL default '',
   `b2` varchar(20) NOT NULL default '',
-  `b3` varchar(32) NOT NULL default '',
-  PRIMARY KEY  (`game_id`,`player_id`)
+  `b3` varchar(32) NOT NULL default ''
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -55,6 +55,7 @@ CREATE TABLE `pinfall` (
 
 /*!40000 ALTER TABLE `pinfall` DISABLE KEYS */;
 LOCK TABLES `pinfall` WRITE;
+INSERT INTO `pinfall` VALUES (1,1,1,'1,5','5',''),(1,1,2,'6,10','',''),(1,1,3,'','',''),(1,1,4,'','',''),(1,1,5,'1,2,3,4,5,6,7,8,9,10','1,2,3,4,5,6,7,8,9,10',''),(1,1,6,'','',''),(1,1,7,'','',''),(1,1,8,'','',''),(1,1,9,'4,7,8','8',''),(1,1,10,'1,2,3,4,5,6,10','','10'),(1,2,1,'','',''),(1,2,2,'','',''),(1,2,3,'','',''),(1,2,4,'10','',''),(1,2,5,'1,3,6,10','1',''),(1,2,6,'1,2,3,5,6','',''),(1,2,7,'','',''),(1,2,8,'3,5,6','5',''),(1,2,9,'7','7',''),(1,2,10,'4,7','','5');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `pinfall` ENABLE KEYS */;
 
@@ -69,8 +70,7 @@ CREATE TABLE `scores` (
   `frame` smallint(2) NOT NULL default '0',
   `b1` smallint(2) NOT NULL default '0',
   `b2` smallint(2) NOT NULL default '0',
-  `b3` smallint(2) NOT NULL default '0',
-  PRIMARY KEY  (`game_id`,`player_id`)
+  `b3` smallint(2) NOT NULL default '0'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -80,6 +80,7 @@ CREATE TABLE `scores` (
 
 /*!40000 ALTER TABLE `scores` DISABLE KEYS */;
 LOCK TABLES `scores` WRITE;
+INSERT INTO `scores` VALUES (1,1,1,8,1,0),(1,1,2,8,2,0),(1,1,3,10,0,0),(1,1,4,10,0,0),(1,1,5,0,0,0),(1,1,6,10,0,0),(1,1,7,10,0,0),(1,1,8,10,0,0),(1,1,9,7,2,0),(1,1,10,3,7,5),(1,2,1,10,0,0),(1,2,2,10,0,0),(1,2,3,10,0,0),(1,2,4,9,1,0),(1,2,5,6,3,0),(1,2,6,5,5,0),(1,2,7,10,0,0),(1,2,8,7,2,0),(1,2,9,9,0,0),(1,2,10,8,2,9);
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `scores` ENABLE KEYS */;
 
@@ -92,6 +93,7 @@ CREATE TABLE `users` (
   `uid` mediumint(4) NOT NULL auto_increment,
   `username` varchar(8) NOT NULL default '',
   `password` varchar(64) NOT NULL default '',
+  `name` varchar(32) NOT NULL default '',
   PRIMARY KEY  (`uid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -102,6 +104,7 @@ CREATE TABLE `users` (
 
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 LOCK TABLES `users` WRITE;
+INSERT INTO `users` VALUES (1,'jim','7b4bb99a2884641b','Jim'),(2,'suzy','65fc6841714ef0bd','Suzy');
 UNLOCK TABLES;
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 
