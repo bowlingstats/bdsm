@@ -1,5 +1,7 @@
 <?
 include('./header.php');
+session_start ();//grab info from cookie
+
 function getPlayers(){
 ?>
 	<form action="game.php" method="post">
@@ -63,7 +65,15 @@ function createGames(){
 	if($_POST["player8"]) $players[7] = $_POST['player8'];
 	print "<form action=\"gamesubmit.php\" method=\"post\">\n";
 	print "<table>\n";
+	
 	foreach($players as $key=>$value){
+		$q = "SELECT name FROM users WHERE username = '$value'";
+		$r = mysql_query($q);
+		list($rn) = mysql_fetch_array($r);
+		$realNames[$key] = $rn;
+	}
+	foreach($players as $key=>$value){
+		$realName = $realNames[$key];
 		?>
 		<script type="text/javascript">
 		<?echo $value?> = new Game();
@@ -71,7 +81,7 @@ function createGames(){
 		</script>
 		<?
 		print "\t<tr>\n";
-		createGrid($value, $key+1);
+		createGrid($value, $realName, $key+1);
 		print "\t</tr>\n";		
 	}
 	print "</table>\n";
@@ -79,8 +89,8 @@ function createGames(){
 	print "<p/><table class=\"key\">\n<tr>\n<td class=\"keye\"><b>Score</b></td>\n<td class=\"keyo\"><b>Input</b></td>\n</tr><tr>\n<td class=\"keye\">0-9</td>\n<td class=\"keyo\">0-9</td>\n</tr><tr>\n<td class=\"keye\">/(spare)</td>\n<td class=\"keyo\">/</td>\n</tr><tr>\n<td class=\"keye\">X(strike)</td>\n<td class=\"keyo\">X, x, or *</td>\n</tr>\n</table>\n";
 }
 
-function createGrid($name, $playerNum){
-	print "\t\t<td class=\"name\">$name <input type=\"hidden\" name=\"player$playerNum\" value=\"$name\"></td>\n";
+function createGrid($name, $realName, $playerNum){
+	print "\t\t<td class=\"name\">$realName <input type=\"hidden\" name=\"player$playerNum\" value=\"$name\"></td>\n";
 	for($frame = 1; $frame < 10; $frame++){
 		?>
 		<td class="frame">
@@ -173,17 +183,24 @@ input.frame{
 </script>
 <body>
 <?
-if($_GET['numPlayers']){
-	$numPlayers = $_GET['numPlayers'];
-	choosePlayers($numPlayers);
-}elseif($_POST['numPlayers']){
-	$numPlayers = $_POST['numPlayers'];
-	choosePlayers($numPlayers);
-}elseif(!$_POST['player1']){
-	getPlayers();
-}
 
-if($_POST['player1']) createGames();
-?>
+if($_SESSION['a']){
+  
+	
+	if($_GET['numPlayers']){
+		$numPlayers = $_GET['numPlayers'];
+		choosePlayers($numPlayers);
+	}elseif($_POST['numPlayers']){
+		$numPlayers = $_POST['numPlayers'];
+		choosePlayers($numPlayers);
+	}elseif(!$_POST['player1']){
+		getPlayers();
+	}
+	
+	if($_POST['player1']) createGames();
+} else{
+	print "You must be logged in to use this page.";
+}
+	?>
 </body>
 </html>

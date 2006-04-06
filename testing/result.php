@@ -1,3 +1,38 @@
+<?
+include('./header.php');
+session_start ();//grab info from cookie
+
+if($_SESSION['a']) admin();
+else user();
+
+if($_GET['game_id']){
+	$game_id = $_GET['game_id'];
+	drawGame();
+}elseif($_POST['game_id']){
+	$game_id = $_POST['game_id'];
+	drawGame();
+}
+
+function button(){
+	global $game_id;
+	$query = "SELECT users.username, games.player_id FROM users, games WHERE games.game_id =".$game_id." AND users.uid = games.player_id";
+	$result = mysql_query($query);
+	while($n = mysql_fetch_array($result)){// this creates as html table for each player in games.game_id
+		list($name, $id) = $n;//get their name and their UID
+		print "$name.scoreGame();";
+	}	
+}
+?>
+
+<?
+function drawGame(){
+
+	global $game_id;
+?>
+<html>
+<head>
+<title>Displaying Game <?echo $game_id?></title>
+<script type="text/javascript">
 var nonums = /^[0-9]*$/;//regex used to test if something is a number.
 
 /*Game is our grand daddy object.  Everything goes on inside of an instance of Game.*/
@@ -6,7 +41,6 @@ function Game() {
 	this.framescore = new Array();//individual scores for frames
 	
 	//define methods below.
-	this.validate = validate;
 	this.scoreGame = scoreGame;
 }
 /*
@@ -19,9 +53,10 @@ After filling framescore, it is processed to fill the score array.
 function scoreGame(){
 	this.framescore = new Array;//we'll need a fresh slate.
 	for(this.frame = 1; this.frame <= 10; this.frame++){
-		this.b1 = document.getElementById(this.name+'f'+this.frame+'b1').value;
-		this.b2 = document.getElementById(this.name+'f'+this.frame+'b2').value;
-		if(this.frame == 10) this.b3 = document.getElementById(this.name+'f10b3').value;
+		this.b1 = document.getElementById(this.name+'f'+this.frame+'b1').innerHTML;
+		this.b2 = document.getElementById(this.name+'f'+this.frame+'b2').innerHTML;
+		if(this.b2 == "&nbsp;/&nbsp;") this.b2 = "/";
+		if(this.frame == 10) this.b3 = document.getElementById(this.name+'f10b3').innerHTML;
 		
 		if(this.frame != 10){//fill framescore with the first 9 frame's information.
 			if(this.b1 == "X"){
@@ -85,124 +120,142 @@ function scoreGame(){
 			document.getElementById(this.name+'score'+ (this.x+1)).innerHTML = "&nbsp;";
 		}
 	}
-	document.getElementById(this.name+'score').value = this.total;
 	
 }
 
-/*
-validate() is used to clean up input in the forms.  If a spare is entered as two numbers, it make ball2 a "/"
-it makes certain that nothing else is entered with a strike.
-It also ensures that no frame has a value higher than 10 entered into it.
-*/
-function validate(frame){
-	//get elements, then get the vaules
-	this.ball1 = document.getElementById(this.name + "f" + frame + "b1");
-	this.ball2 = document.getElementById(this.name + "f" + frame + "b2");
-	if(frame == "10") this.ball3 = document.getElementById(this.name+ "f10b3");
-	this.b1 = document.getElementById(this.name + "f" + frame + "b1").value;
-	this.b2 = document.getElementById(this.name + "f" + frame + "b2").value;
-	if(frame == "10") this.b3 = this.ball3.value;
-	//convert -'s to 0's
-	if(this.b1 == "-"){
-		this.b1 = "0";
-		this.ball1.value = "0";
+</script>
+<style>
+td{
+	border-color: black;
+}
+td.head{
+	text-align: center;
+	font-weight: bold;
+}
+td.name{
+	border-style: solid;
+	border-width: 2px;
+	text-align: center;
+	font-weight: bold;
+}
+td.frame{
+	border-style: solid;
+	border-width: 2px;
+	padding: 0px;
+}
+td.ball1{
+	text-align: center;
+}
+td.ball2{
+	border-style: solid;
+	border-width: 1px;
+	text-align: right;
+}
+td.ball3{
+	border-style: solid;
+	border-width: 1px;
+	text-align: center;
+}
+td.score{
+	text-align: center;
+}
+
+</style>
+</head>
+<body onLoad="<?button()?>">
+<center>
+<h1>Game <?echo $game_id?></h1>
+<?if($_SESSION['a']) print "<a href=\"gameedit.php?game_id=$game_id\">edit this game</a>\n<p/>\n";?>
+</center>
+<table>
+	<tr>
+		<td class="head">&nbsp;</td>
+<?
+for($x = 1; $x <= 10; $x++){
+	print "\t\t<td class=\"head\">$x</td>\n";
+}
+?>
+	</tr>
+	<tr>
+<?
+$query = "SELECT game_id FROM games WHERE game_id = $game_id";
+$result = mysql_query($query);
+mysql_fetch_array($result) or exit("No game with id $game_id.");
+
+$query = "SELECT users.username, games.player_id, users.name FROM users, games WHERE games.game_id = $game_id AND users.uid = games.player_id";
+$result = mysql_query($query);
+
+while($n = mysql_fetch_array($result)){// this creates as html table for each player in games.game_id
+	$playerNum++;
+	list($name, $id, $realName) = $n;//get their name and their UID
+	//get the results for each player from games
+	$q = "SELECT frame, b1, b2, b3 FROM scores WHERE game_id = $game_id AND player_id = $id";
+	$r = mysql_query($q);
+	?>
+	<script type="text/javascript">
+	<?echo $name?> = new Game();
+	<?echo $name?>.name = "<?echo $name?>";
+	</script>
+	<?
+	while($x = mysql_fetch_array($r)){
+		list($frame, $b1, $b2, $b3) = $x;
+		if($frame != 10){
+			if($b1 == 10 ) $b1 = "X";
+			if($b1 + $b2 == 10) $b2 = "&nbsp;/&nbsp;";
+		}else{
+			if($b1 == 10) $b1 = "X";
+			if($b2 == 10) $b2 = "X";
+			if($b3 == 10) $b3 = "X";
+			
+			if($b2 != 0 && $b1 + $b2 == 10) $b2 = "&nbsp;/&nbsp;";
+			if($b3 != 0 && $b2 + $b3 == 10) $b3 = "&nbsp;/&nbsp;";
+		}
+		if($frame == 1) print "\t\t<td class=\"name\"><a href=\"usergames.php?uid=$id\">$realName</a></td>\n";
+		?>
+		<td class="frame">
+		<?
+		if($frame != 10){
+		?>
+			<table>
+				<tr>
+					<td class="ball1" id="<?print $name."f".$frame."b1"?>"><?echo $b1?></td>
+					<td class="ball2" id="<?print $name."f".$frame."b2"?>"><?echo $b2?></td>
+				</tr>
+				<tr>
+					<td id="<?print $name."score".$frame?>" class="score" colspan='2'>&nbsp;</td>
+				</tr>
+			</table>
+		<?
+		} else {
+	?>
+			<table>
+				<tr>
+					<td class="ball1" id="<?print $name."f".$frame."b1"?>"><?echo $b1?></td>
+					<td class="ball2" id="<?print $name."f".$frame."b2"?>"><?echo $b2?></td>
+					<td class="ball3" id="<?print $name."f".$frame."b3"?>"><?echo $b3?></td>
+				</tr>
+				<tr>
+					<td id="<?print $name."score".$frame?>" class="score" colspan='3'>&nbsp;</td>
+				</tr>
+			</table>
+	<?
+		}
+	?>
+		</td>
+	<?
 	}
-	if(this.b2 == "-"){
-		this.b2 = "0";
-		this.ball2.value = "0";
-	}
-	if(this.b3 == "-"){
-		this.b3 = "0";
-		this.ball3.value = "0";
-	}
-	//convert x's and *'s to X's
-	if(this.b1 == "x" || this.b1 == "*"){
-		this.b1 = "X";
-		this.ball1.value = "X";
-	}
+	?>
+	</tr>
 	
-	//verify b1 is a valid character.
-	if(frame != "10"){		
-		//if ball1 is not an X or a number, it is invalid.
-		if(!isStrike(this.b1) && !nonums.test(this.b1)){
-			alert("Ball 1 must be a number 0-9\nand X, x, or * for strikes");
-			this.ball1.value = "";
-			this.ball1.focus();
-		}
-		
-		if(this.b1 == "X"){//if b1 is a X there is no 2nd ball
-			this.ball1.value = "X";
-			this.ball2.value = "";
-			document.getElementById(this.name + "f" + (parseInt(frame)+1) + "b1").focus();
-		} else if(isSpare(this.b1, this.b2)){//if it's a spare b2 should be /
-			this.ball2.value = "/";
-		} else if(parseInt(this.b1) + parseInt(this.b2) > 10){//no two balls can be more than 10 pins, blank ball2
-			alert("The maximum value for one frame is 10.");
-			this.ball2.value = "";
-			this.ball1.focus();
-		} else if(this.b2 != "/" && !nonums.test(this.b2)){
-			alert("Ball 2 must be a number 0-9 or /");
-			this.ball2.value = "";
-			this.ball1.focus();
-		}
-	} else{//check ball1 10th frame.
-		//if ball1 is not a X or a number is is invalid.
-		if(!isStrike(this.b1) && !nonums.test(this.b1)){
-			alert("Ball 1 must be a number 0-9\nand X, x, or * for strikes");
-			this.ball1.value = "";
-			this.ball1.focus();
-		}
-		//if ball1 is a X ball2 cannot be a /, if it is not a number or a X it is invalid
-		if(isStrike(this.b1)){
-			if(!isStrike(this.b2) && !nonums.test(this.b2)){
-				alert("Ball 1 is strike, ball 2 must be another strike or a number.");
-				this.ball2.value = "";
-				this.ball1.focus();
-			}
-		}
-		//if ball one is a # then ball 2 cannot be a X
-		if(nonums.test(this.b1) && isStrike(this.b2)){
-			alert("Ball 1 is not a X, ball 2 cannot be a strike.");
-			this.ball2.value = "";
-			this.ball1.focus();
-		}
-		//ball 3 can be a #, a /, or a X; but only in special cases
-		if(isStrike(this.b2) && !isStrike(this.b3)){
-			if(this.b3 == "/" || !nonums.test(this.b3)){
-				alert("Ball 2 is a X, ball 3 cannot be a /");
-				this.ball3.value = "";
-				this.ball2.focus();
-			}
-		} else if(isSpare(this.b2, this.b3)){
-			this.ball3.value = "/";
-		}
-		
-		if(isSpare(this.b1, this.b2)) this.ball2.value = "/";
-		if(!isSpare(this.b2, this.b3) && parseInt(this.b2) + parseInt(this.b3) > 10){
-			alert("Ball 2 and ball 3 cannot be greater than 10");
-			this.ball3.value = "";
-			this.ball2.focus();
-		}
-		if(!isSpare(this.b1, this.b2) && !isStrike(this.b1)){
-			this.ball3.value = "0";
-		}
-		if(isStrike(this.b1)) this.ball1.value = "X";
-		if(isStrike(this.b2)) this.ball2.value = "X";
-		if(isStrike(this.b3)) this.ball3.value = "X";
-	}
+	<?
+	
 }
+?>
+</table>
+</body>
+</html>
 
+<?
 
-function isStrike(ball){
-	if(ball == "X" || ball == "x" || ball == "*"){
-		return true;
-	} else{
-		return false;
-	}
 }
-
-function isSpare(ball1, ball2){
-	if(nonums.test(ball1) && ball2 == "/") return true;
-	else if(parseInt(ball1) + parseInt(ball2) == 10) return true;
-	else return false;	
-}
+?>

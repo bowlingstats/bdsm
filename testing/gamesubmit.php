@@ -1,7 +1,12 @@
 <?
 include('./header.php');// gets us our connection to the database;
-
-if($_POST['insert'] == "Save Records") insertDb();
+session_start ();//grab info from cookie
+if($_SESSION['a']){
+	if($_POST['insert'] == "Save Records") insertDb();
+	if($_POST['edit'] == "Save Changes" && $_POST['game_id']) updateDb();
+} else {
+	print "You must be logged in to use this page.";
+}
 
 function insertDb(){
 	//assign all the players to an array, and then use that array to process each players game
@@ -55,6 +60,57 @@ function insertDb(){
 		$query .= "($game_id, $uid, $f, $b1, $b2, $b3)";
 		$result = mysql_query($query);
 	}
+	header("Location: result.php?game_id=$game_id"); /* Redirect browser */
 	print"Games successfully inserted into the database.";
+}
+
+function updateDb(){
+	$game_id = $_POST['game_id'];
+	if($_POST["player1"]) $players[0] = $_POST['player1'];
+	if($_POST["player2"]) $players[1] = $_POST['player2'];
+	if($_POST["player3"]) $players[2] = $_POST['player3'];
+	if($_POST["player4"]) $players[3] = $_POST['player4'];
+	if($_POST["player5"]) $players[4] = $_POST['player5'];
+	if($_POST["player6"]) $players[5] = $_POST['player6'];
+	if($_POST["player7"]) $players[6] = $_POST['player7'];
+	if($_POST["player8"]) $players[7] = $_POST['player8'];
+	
+	foreach($players as $key=>$value){
+		$id = $value;
+		
+		$q = "SELECT username FROM users WHERE uid = $value";
+		$r = mysql_query($q);
+		list($name) = mysql_fetch_array($r);
+		for($f = 1; $f <=9; $f++){		
+			if($_POST[$name."f".$f."b1"] == "X") $b1 = 10;
+			else $b1 = $_POST[$name."f".$f."b1"];
+			
+			if($_POST[$name."f".$f."b2"] == "/") $b2 = 10 - $b1;
+			elseif($_POST[$name."f".$f."b2"] == "") $b2 = 0;
+			else $b2 = $_POST[$name."f".$f."b2"];
+			
+			$b3 = 0;
+			
+			$u = "UPDATE scores SET b1 = $b1, b2 = $b2, b3 = $b3 WHERE player_id = $id AND game_id = $game_id	AND frame = $f";
+			$r = mysql_query($u);
+		}
+		if($_POST[$name."f10b1"] == "X") $b1 = 10;
+			else $b1 = $_POST[$name."f10b1"];
+		
+		if($_POST[$name."f10b2"]== "X") $b2 = 10;
+		elseif($_POST[$name."f10b2"]== "/") $b2 = 10 - $b1;
+		else $b2 = $_POST[$name."f10b2"];
+		
+		if($_POST[$name."f10b3"] == "X") $b3 = 10;
+		elseif($_POST[$name."f10b3"] == "/") $b3 = 10 - $b2;
+		else $b3 = $_POST[$name."f10b3"];
+		
+		$u = "UPDATE scores SET b1 = $b1, b2 = $b2, b3 = $b3 WHERE player_id = $id AND game_id = $game_id	AND frame = $f";
+		$r = mysql_query($u);
+		
+		$u = "UPDATE games SET score = '".$_POST[$name."score"]."' WHERE player_id = $id AND game_id = $game_id";
+		$r = mysql_query($u);
+	}
+	header("Location: result.php?game_id=$game_id"); /* Redirect browser */
 }
 ?>
