@@ -1,4 +1,7 @@
 <?
+/*
+Need to add function to edit the date and location of a game.
+*/
 include('./header.php');
 session_start ();//grab info from cookie
 if($_SESSION['a']){
@@ -74,6 +77,16 @@ input.frame{
 
 </head>
 <body onLoad="<?button()?>">
+<?
+//create a centered heading
+$q = "SELECT location, DATE_FORMAT(date, '%W, %M %D, %Y %l:%i%p') FROM games WHERE game_id = $game_id";
+$r = mysql_query($q);
+$row = mysql_fetch_row($r);
+?>
+<center>
+<?print "<font size=\"+1\">".$row[1]."</font><br/><font size=\"+2\">Played at ".$row[0]."</font><br/>\n"?>
+</center>
+
 <form action="gamesubmit.php" method="post">
 <input type="hidden" name="game_id" value="<?echo $game_id?>">
 <table>
@@ -91,7 +104,7 @@ while($n = mysql_fetch_array($result)){// this creates as html table for each pl
 	$playerNum++;
 	list($name, $id, $realName) = $n;//get their name and their UID
 	//get the results for each player from games
-	$q = "SELECT frame, b1, b2, b3 FROM scores WHERE game_id = $game_id AND player_id = $id";
+	$q = "SELECT frame, b1, b2, b3 FROM scores WHERE game_id = $game_id AND player_id = $id ORDER BY frame ASC";
 	$r = mysql_query($q);
 	?>
 	<script type="text/javascript">

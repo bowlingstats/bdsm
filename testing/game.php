@@ -4,6 +4,7 @@ session_start ();//grab info from cookie
 
 function getPlayers(){
 ?>
+	<p>
 	<form action="game.php" method="post">
 	Please select the number of players: <select name="numPlayers">
 		<option value="1">1</option>
@@ -24,6 +25,11 @@ function choosePlayers($num){
 	<script>
 	function val(){
 		namesArray = new Array();
+		if(document.getElementById("location").value == ""){
+			alert("Location cannot be blank.");
+			return false;
+		}
+		
 		for(x = 0; x < document.forms[0].length; x++){
 			namesArray[x] = document.forms[0].elements[x].value;
 		}
@@ -38,9 +44,12 @@ function choosePlayers($num){
 		}
 		return true;
 	}
+	function setCust(){
+		document.getElementById("location").innerHTML = "<input type='text'name='location' id='location'>";
+	}
 	</script>
 	<?
-	print "<form action=\"game.php\" method=\"post\" onSubmit=\"return val();\">\n";
+	print "<p/><form action=\"game.php\" method=\"post\" onSubmit=\"return val();\">\n";
 	$query = "SELECT name, username FROM users";
 	$result = mysql_query($query);
 	while($nameArray = mysql_fetch_array($result)){
@@ -52,6 +61,18 @@ function choosePlayers($num){
 		print "$out";
 		print "</select>\n<br/>\n";
 	}
+	//options for locations
+	print "Location: <span id=\"location\"><select name=\"location\" id=\"location\" onClick=\"if(this.value == 'custom') setCust();\">\n";
+	$query = "SELECT location, COUNT(location) AS num FROM games GROUP BY location ORDER BY num DESC";
+	$result = mysql_query($query);
+	while($locArray = mysql_fetch_array($result)){
+		list($loc, $num) = $locArray;
+		print "\t<option value=\"$loc\">$loc</option>\n";
+	}
+	print "\t<option value=\"custom\">Custom:</option>\n</select></span>\n";
+	
+	
+	
 	print "<input type=\"submit\"></form>\n";
 }
 function createGames(){
@@ -63,7 +84,10 @@ function createGames(){
 	if($_POST["player6"]) $players[5] = $_POST['player6'];
 	if($_POST["player7"]) $players[6] = $_POST['player7'];
 	if($_POST["player8"]) $players[7] = $_POST['player8'];
-	print "<form action=\"gamesubmit.php\" method=\"post\">\n";
+	$location = $_POST["location"];
+	print "<p/><center><font size=\"+2\">$location</font></center>\n";
+	print "<p/>\n<form action=\"gamesubmit.php\" method=\"post\">\n";
+	print "<input type=\"hidden\" name=\"location\" value=\"$location\">\n";
 	print "<table>\n";
 	
 	foreach($players as $key=>$value){
@@ -116,6 +140,7 @@ function createGrid($name, $realName, $playerNum){
 		</tr>
 		<tr>
 			<td id="<?print $name."score".$frame?>" class="score" colspan='3'>&nbsp;</td>
+			<input type="hidden" name="<?echo $name?>score" id="<?echo $name?>score">
 		</tr>
 	</table>
 	</td>
@@ -183,7 +208,13 @@ input.frame{
 </script>
 <body>
 <?
-
+//draw links heading
+if($_SESSION['a']){
+	admin();
+} else{
+	user();
+}
+//Auth user and draw appropriately.
 if($_SESSION['a']){
   
 	

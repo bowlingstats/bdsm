@@ -19,6 +19,9 @@ function insertDb(){
 	if($_POST["player7"]) $players[6] = $_POST['player7'];
 	if($_POST["player8"]) $players[7] = $_POST['player8'];
 	
+	if($_POST["location"]) $location = $_POST['location'];
+	else $location = "Not Specified";
+	
 	//find the current max of game_id and add 1 to it.
 	$query = "SELECT MAX(game_id) FROM games";
 	$result = mysql_query($query);
@@ -30,7 +33,8 @@ function insertDb(){
 		$result = mysql_query($query);
 		list($uid) = mysql_fetch_array($result);
 		
-		$query = "INSERT INTO games (game_id, player_id) VALUES('$game_id', '$uid')\n";
+		$query = "INSERT INTO games (game_id, player_id, score, location, date) VALUES('$game_id', '$uid', '".$_POST[$value.'score']."', '$location', NOW())\n";
+		
 		$result = mysql_query($query);
 		
 		$query = "INSERT INTO scores (game_id, player_id, frame, b1, b2, b3) VALUES";
@@ -61,6 +65,7 @@ function insertDb(){
 		$result = mysql_query($query);
 	}
 	header("Location: result.php?game_id=$game_id"); /* Redirect browser */
+	
 	print"Games successfully inserted into the database.";
 }
 

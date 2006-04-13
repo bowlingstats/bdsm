@@ -3,7 +3,7 @@
 session_start();
 session_unset();
 if(session_destroy()){
-  echo "Logout successful.<Br>Log back in <a href='login.php'>Here</a>\n";
+	header("Location: index.php");
 } else {
   echo "Logout failed.\n";
 }
