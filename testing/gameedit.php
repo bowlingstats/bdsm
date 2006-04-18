@@ -1,7 +1,4 @@
 <?
-/*
-Need to add function to edit the date and location of a game.
-*/
 include('./header.php');
 session_start ();//grab info from cookie
 if($_SESSION['a']){
@@ -70,25 +67,71 @@ input.frame{
 	width:15px;
 	text-align: center;
 }
+input.year{
+	width: 45px;
+}
+input.month{
+	width: 20px;
+}
+input.day{
+	width: 20px;
+}
 </style>
 
 <script type="text/javascript" src="scoring.js">
+</script>
+<script type="text/javascript">
+var src;
+function setCust(){
+	src = document.getElementById("location").innerHTML;
+	document.getElementById("location").innerHTML = "<input type='text'name='location' id='loc'><input type='button' value='cancel' onClick='restore()'>";
+}
+function restore(){
+	document.getElementById("location").innerHTML = src;
+}
+function val(){
+	if(parseInt(document.getElementById("year").value) && parseInt(document.getElementById("month").value) && parseInt(document.getElementById("day").value)){
+	} else{
+		alert("Year, Month, and Day must all be numbers");
+		return false;
+	}
+	
+	if(document.getElementById("loc").value != ""){
+		return true;
+	} else {
+		alert("Location cannot be blank");
+		return false;
+	}
+}
 </script>
 
 </head>
 <body onLoad="<?button()?>">
 <?
 //create a centered heading
-$q = "SELECT location, DATE_FORMAT(date, '%W, %M %D, %Y %l:%i%p') FROM games WHERE game_id = $game_id";
+$q = "SELECT location, DATE_FORMAT(date, '%W, %M %D, %Y %l:%i%p'), YEAR(date), MONTH(date), DAY(date) FROM games WHERE game_id = $game_id";
 $r = mysql_query($q);
 $row = mysql_fetch_row($r);
 ?>
 <center>
 <?print "<font size=\"+1\">".$row[1]."</font><br/><font size=\"+2\">Played at ".$row[0]."</font><br/>\n"?>
+<?print $row[2]."-".$row[3]."-".$row[4]."<br/>\n"?>
 </center>
 
-<form action="gamesubmit.php" method="post">
+<form action="gamesubmit.php" method="post" onSubmit="return val()">
 <input type="hidden" name="game_id" value="<?echo $game_id?>">
+<b>yyyy-mm-dd</b>: <input name="year" id="year" class="year" type="text" maxlength="4" value="<?echo $row[2]?>"> - <input type="text" name="month" id="month" class="month" maxlength= 2 value="<?echo $row[3]?>"> - <input type="text" name="day" id="day" class="day" maxlength="2" value="<?echo $row[4]?>"><br/>
+<?
+print "<b>Location</b>: <span id=\"location\"><select name=\"location\" id=\"loc\" onClick=\"if(this.value == 'custom') setCust();\">\n";
+	$query = "SELECT location, COUNT(location) AS num FROM games WHERE location != \"".$row[0]."\" GROUP BY location ORDER BY num DESC";
+	$result = mysql_query($query);
+	print "\t<option value=\"".$row[0]."\">".$row[0]."</option>\n";
+	while($locArray = mysql_fetch_array($result)){
+		list($loc, $num) = $locArray;
+		print "\t<option value=\"$loc\">$loc</option>\n";
+	}
+	print "\t<option value=\"custom\">Custom:</option>\n</select></span>\n";
+?>
 <table>
 	<tr>
 
@@ -172,7 +215,8 @@ while($n = mysql_fetch_array($result)){// this creates as html table for each pl
 ?>
 
 </table>
-<input type="submit" name="edit" value="Save Changes" onClick="<?button()?>; return(confirm('Do you wish to commit these scores to the database?'));">
+<input type="submit" name="edit" value="Save Changes" onClick="<?button()?>return(confirm('Do you wish to commit these scores to the database?'));"> 
+<input type="submit" name="delete" value="Delete Game" onClick="return(confirm('Do you wish to delete this game from the database?'));">
 </form>
 </body>
 </html>

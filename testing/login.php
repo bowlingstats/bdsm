@@ -1,5 +1,5 @@
 <?PHP
-
+include('./header.php');
 session_start();
 
 if(!isset($a)){
@@ -50,9 +50,7 @@ function dispLogin(){
 }//dispLogin
 
 function authorize($un, $pw){
-  $conn = mysql_pconnect("localhost", "jfrancis", "thefish");
-  $db = mysql_select_db("bdsm");
-  $query = "SELECT username, password FROM users WHERE username = '$un' AND password = password('$pw')";
+  $query = "SELECT username, password FROM users WHERE username = '$un' AND password = password('$pw') AND admin = 1";
   $result = mysql_query($query);
   $num = mysql_numrows($result);
   if($num == 1){

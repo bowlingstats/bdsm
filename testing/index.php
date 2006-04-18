@@ -37,7 +37,7 @@ while($a = mysql_fetch_array($r)){
 	list($name, $uid) = $a;
 	print "\t\t<a href=\"usergames.php?uid=$uid\">$name</a><br/>\n";
 }
-print "\t</td>\n";
+print "\t</td valign=\"top\">\n";
 
 //averages
 $q = "SELECT users.name, ROUND(AVG(games.score)) AS avg FROM users, games WHERE users.uid = games.player_id GROUP BY games.player_id ORDER BY avg DESC";

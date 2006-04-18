@@ -1,9 +1,56 @@
 <?
 include('./header.php');// gets us our connection to the database;
 session_start ();//grab info from cookie
-
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/transitional.dtd">
+<html>
+<head>
+<title> </title>
+</head>
+<body>
+<?
 if($_SESSION['a']) admin();
 else user();
+//take the GET options for sorting and length and create usable varaiables
+switch($_GET['orderBy']){
+	case "date":
+		$orderBy = "date";
+		break;
+	case "score":
+		$orderBy = "score";
+		break;
+	case "location":
+		$orderBy = "location";
+		break;
+	default:
+		$orderBy = "date";
+}
+
+switch($_GET['order']){
+	case "ASC":
+		$order = "ASC";
+		break;
+	case "DESC":
+		$order = "DESC";
+		break;
+	default:
+		$order = "DESC";
+}
+
+switch($_GET['dispLen']){
+	case "20":
+		$dispLen = "20";
+		break;
+	case "50":
+		$dispLen = "50";
+		break;
+	case "All":
+		$dispLen = "All";
+		break;
+	default:
+		$dispLen = "15";
+}
+
 //build a table to house information
 if($_GET['uid']){
 	$uid = $_GET['uid'];
@@ -14,9 +61,34 @@ if($_GET['uid']){
 	
 	print "<center><h1>".$n[0]."</h1></center>\n";
 	print "<table style=\"width: 800px;\" border=1>\n<tr>\n\t<td valign=\"top\">\n";
-	$q = "SELECT game_id, score, DATE(date), location FROM games WHERE player_id = $uid ORDER BY date DESC";
+	if($dispLen == "All"){
+		$q = "SELECT game_id, score, DATE(date), location FROM games WHERE player_id = $uid ORDER BY $orderBy $order";
+	}else{
+		$q = "SELECT game_id, score, DATE(date), location FROM games WHERE player_id = $uid ORDER BY $orderBy $order LIMIT $dispLen";
+	}
 	$r = mysql_query($q);
-	print "\t\t<b>Games Played</b><br/>\n";
+	print "\t\t<b>Games Played</b>\n";
+?>
+		<form action="usergames.php" method="GET">
+		<input type="hidden" name="uid" value="<?echo $uid?>">
+		Order By:<select name="orderBy" style="font-size: 0.75em;">
+			<option value="date">Date</option>
+			<option value="score">Score</option>
+			<option value="location">Location</option>
+		</select>
+		<select name="order" style="font-size: 0.75em;">
+			<option value="DESC">Descending</option>
+			<option value="ASC">Ascending</option>
+		</select>
+		Limit to <select name="dispLen" style="font-size: 0.75em;">
+			<option value="15">15</option>
+			<option value="20">20</option>
+			<option value="50">50</option>
+			<option value="All">All</option>
+		</select> games 
+		<input type="submit" value="Sort Games" style="font-size: 0.75em;">
+		</form><br/>
+<?	
 	while($games = mysql_fetch_array($r)){
 		list($gid, $score, $date, $location) = $games;
 		print"\t\t<a href=\"result.php?game_id=$gid\">Score of $score</a>  at $location, on $date<br/>\n";
@@ -31,7 +103,7 @@ if($_GET['uid']){
 	$q = "SELECT SUM(CASE 1 WHEN b1 = 10 AND b2 = 10 AND b3 = 10 THEN 3 WHEN b1 = 10 AND b2 = 10 AND b3 != 10 THEN 2 WHEN b1 != 10 AND b2 != 10 AND b3 = 10 THEN 1 WHEN b1 = 10 AND b2 != 10 AND b3 != 10 THEN 1 ELSE 0 END) AS strikes FROM scores WHERE player_id = $uid GROUP BY player_id";
 	$r = mysql_query($q);
 	$stat = mysql_fetch_row($r);
-	print "Strikes: ".$stat[0]."\n<br/>\n";
+	print "\t\tStrikes: ".$stat[0]."\n\t\t<br/>\n";
 	
 	//spare shooting:
 	$q = "SELECT (SELECT COUNT(frame) FROM scores WHERE CASE 1 WHEN frame != 10 AND b1 != 10 AND b1 + b2 = 10 THEN 1 WHEN frame = 10 AND b1!= 10 AND b1 + b2 = 10 THEN 1 WHEN frame = 10 AND b1 = 10 AND b2 != 10 AND b2 + b3 = 10 THEN 1 END AND player_id = $uid) AS spares,
@@ -41,7 +113,7 @@ if($_GET['uid']){
 	list($spare, $frame) = $stat;
 	if($frame != 0) $percentage = round(($spare/$frame)*100, 2);
 	else $percentage = 100;
-	print "Spare shooting: $spare for $frame($percentage%)\n<br/>\n";
+	print "\t\tSpare shooting: $spare for $frame($percentage%)\n\t\t<br/>\n";
 	
 	//consecutive strikes:
 	$q = "SELECT DISTINCT(game_id) FROM scores WHERE b1 = 10 AND player_id = $uid";
@@ -83,18 +155,18 @@ if($_GET['uid']){
 		}
 	}
 	//print the results from strikes() and continous()
-	print "Doubles: $double<br/>\n";
-	print "Poults: $poult<br/>\n";
-	print "Turkeys: $turkey<br/>\n";
-	print "Four Baggers: $fourb<br/>\n";
-	print "Five Baggers: $fiveb<br/>\n";
-	print "Six Baggers: $sixb<br/>\n";
-	print "Seven Baggers: $sevenb<br/>\n";
-	print "Eight Baggers: $eightb<br/>\n";
-	print "Nine Baggers: $nineb<br/>\n";
-	print "Ten Baggers: $tenb<br/>\n";
-	print "Eleven Baggers: $elevenb<br/>\n";
-	print "Twelve Baggers: $twelveb<br/>\n";
+	print "\t\tDoubles: $double<br/>\n";
+	print "\t\tPoults: $poult<br/>\n";
+	print "\t\tTurkeys: $turkey<br/>\n";
+	print "\t\tFour Baggers: $fourb<br/>\n";
+	print "\t\tFive Baggers: $fiveb<br/>\n";
+	print "\t\tSix Baggers: $sixb<br/>\n";
+	print "\t\tSeven Baggers: $sevenb<br/>\n";
+	print "\t\tEight Baggers: $eightb<br/>\n";
+	print "\t\tNine Baggers: $nineb<br/>\n";
+	print "\t\tTen Baggers: $tenb<br/>\n";
+	print "\t\tEleven Baggers: $elevenb<br/>\n";
+	print "\t\tTwelve Baggers: $twelveb<br/>\n";
 	
 ?>
 	</td>
@@ -197,3 +269,5 @@ function continous($c){
 	}
 }//end continous
 ?>
+</body>
+</html>

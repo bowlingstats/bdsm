@@ -4,6 +4,7 @@ session_start ();//grab info from cookie
 if($_SESSION['a']){
 	if($_POST['insert'] == "Save Records") insertDb();
 	if($_POST['edit'] == "Save Changes" && $_POST['game_id']) updateDb();
+	if($_POST['delete'] == "Delete Game" && $_POST['game_id']) deleteDb();
 } else {
 	print "You must be logged in to use this page.";
 }
@@ -71,6 +72,8 @@ function insertDb(){
 
 function updateDb(){
 	$game_id = $_POST['game_id'];
+	$date = $_POST['year']."-".$_POST['month']."-".$_POST['day'];
+	$location = $_POST['location'];
 	if($_POST["player1"]) $players[0] = $_POST['player1'];
 	if($_POST["player2"]) $players[1] = $_POST['player2'];
 	if($_POST["player3"]) $players[2] = $_POST['player3'];
@@ -113,9 +116,24 @@ function updateDb(){
 		$u = "UPDATE scores SET b1 = $b1, b2 = $b2, b3 = $b3 WHERE player_id = $id AND game_id = $game_id	AND frame = $f";
 		$r = mysql_query($u);
 		
-		$u = "UPDATE games SET score = '".$_POST[$name."score"]."' WHERE player_id = $id AND game_id = $game_id";
+		$u = "UPDATE games SET score = '".$_POST[$name."score"]."', location = '$location', date = '$date' WHERE player_id = $id AND game_id = $game_id";
 		$r = mysql_query($u);
 	}
 	header("Location: result.php?game_id=$game_id"); /* Redirect browser */
+}
+
+function deleteDb(){
+	$gid = $_POST['game_id'];
+	
+	$q = "DELETE FROM games WHERE game_id = $gid";
+	$r = mysql_query($q) or exit("Query \"$q\" failed.");
+	
+	$q = "DELETE FROM scores WHERE game_id = $gid";
+	$r = mysql_query($q) or exit("Query \"$q\" failed.");
+	
+	$q = "DELETE FROM pinfall WHERE game_id = $gid";
+	$r = mysql_query($q) or exit("Query \"$q\" failed.");
+	
+	header("Location: index.php"); /* Redirect browser */
 }
 ?>

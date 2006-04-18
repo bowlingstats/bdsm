@@ -50,7 +50,7 @@ function choosePlayers($num){
 	</script>
 	<?
 	print "<p/><form action=\"game.php\" method=\"post\" onSubmit=\"return val();\">\n";
-	$query = "SELECT name, username FROM users";
+	$query = "SELECT name, username FROM users ORDER BY name ASC";
 	$result = mysql_query($query);
 	while($nameArray = mysql_fetch_array($result)){
 		list($name, $username) = $nameArray;
