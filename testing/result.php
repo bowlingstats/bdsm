@@ -2,14 +2,6 @@
 include('./header.php');
 session_start ();//grab info from cookie
 
-if($_SESSION['a'] == 2){
-	admin();
-} elseif($_SESSION['a'] == 1){
-	user();
-}else{
-	player();
-}
-
 if($_GET['game_id']){
 	$game_id = $_GET['game_id'];
 	drawGame();
@@ -60,10 +52,10 @@ function scoreGame(){
 	for(this.frame = 1; this.frame <= 10; this.frame++){
 		this.b1 = document.getElementById(this.name+'f'+this.frame+'b1').innerHTML;
 		this.b2 = document.getElementById(this.name+'f'+this.frame+'b2').innerHTML;
-		if(this.b2 == "&nbsp;/&nbsp;") this.b2 = "/";
+		if(this.b2 == document.getElementById('proto').innerHTML) this.b2 = "/";
 		if(this.frame == 10){
 			this.b3 = document.getElementById(this.name+'f10b3').innerHTML;
-			if(this.b3 == "&nbsp;/&nbsp;") this.b3 = "/";
+			if(this.b3 == document.getElementById('proto').innerHTML) this.b3 = "/";
 		}
 		
 		if(this.frame != 10){//fill framescore with the first 9 frame's information.
@@ -171,7 +163,18 @@ td.score{
 </style>
 </head>
 <body onLoad="<?button()?>">
+<!--this is a kluge so this page will work in Opera-->
+<div id="proto" style="visibility: hidden; z-index= -1;">&nbsp;/&nbsp;</div>
 <?
+//draw the header.
+if($_SESSION['a'] == 2){
+	admin();
+} elseif($_SESSION['a'] == 1){
+	user();
+}else{
+	player();
+}
+
 $q = "SELECT location, DATE_FORMAT(date, '%W, %M %D, %Y %l:%i%p') FROM games WHERE game_id = $game_id";
 $r = mysql_query($q);
 $row = mysql_fetch_row($r);

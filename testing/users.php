@@ -192,9 +192,13 @@ name: <input type="text" id="name" name="name" value="<?echo $row[name]?>"><br/>
 username: <input type="text" id="username" name="username" value="<?echo $row[username]?>"><br/>
 Change Password? <input type="checkbox" name="chpwd"> New Password <input type="password" id="password" name="password"><br/>
 <?
-if($row[admin] == 0) print "Class: <input type=\"radio\" name=\"admin\" value=\"0\" checked>player <input type=\"radio\" name=\"admin\" value=\"1\">user <input type=\"radio\" name=\"admin\" value=\"2\">admin<br/>\n";
-elseif($row[admin] == 1) print "Class: <input type=\"radio\" name=\"admin\" value=\"0\">player <input type=\"radio\" name=\"admin\" value=\"1\" checked>user <input type=\"radio\" name=\"admin\" value=\"2\">admin<br/>\n";
-elseif($row[admin] == 2) print "Class: <input type=\"radio\" name=\"admin\" value=\"0\">player <input type=\"radio\" name=\"admin\" value=\"1\">user <input type=\"radio\" name=\"admin\" value=\"2\" checked>admin<br/>\n";
+if($row[username] == $_SESSION['uname']){//this is so a user cannot change their class.
+	print "<input type=\"hidden\" name=\"admin\" value=\"".$row[admin]."\">\n";
+}else{
+	if($row[admin] == 0) print "Class: <input type=\"radio\" name=\"admin\" value=\"0\" checked>player <input type=\"radio\" name=\"admin\" value=\"1\">user <input type=\"radio\" name=\"admin\" value=\"2\">admin<br/>\n";
+	elseif($row[admin] == 1) print "Class: <input type=\"radio\" name=\"admin\" value=\"0\">player <input type=\"radio\" name=\"admin\" value=\"1\" checked>user <input type=\"radio\" name=\"admin\" value=\"2\">admin<br/>\n";
+	elseif($row[admin] == 2) print "Class: <input type=\"radio\" name=\"admin\" value=\"0\">player <input type=\"radio\" name=\"admin\" value=\"1\">user <input type=\"radio\" name=\"admin\" value=\"2\" checked>admin<br/>\n";
+}
 ?>
 <input type="submit" name="sub" value="Confirm Changes" onClick="return confirm('Save these changes?')">
 </form>

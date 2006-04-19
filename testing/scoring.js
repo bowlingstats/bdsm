@@ -147,7 +147,7 @@ function validate(frame){
 			this.ball1.focus();
 		}
 	} else{//check ball1 10th frame.
-		//if ball1 is not a X or a number is is invalid.
+		//if ball1 is not a X or a number it is invalid.
 		if(!isStrike(this.b1) && !nonums.test(this.b1)){
 			alert("Ball 1 must be a number 0-9\nand X, x, or * for strikes");
 			this.ball1.value = "";
@@ -167,6 +167,13 @@ function validate(frame){
 			this.ball2.value = "";
 			this.ball1.focus();
 		}
+		//if balls 1 and 2 are a / ball 3 can only be a # or a X
+		if(isSpare(this.b1, this.b2) && this.b3 == "/"){
+			alert("Ball 2 is a /, ball 3 cannot also be a /.");
+			this.ball3.value = "0";
+			this.ball2.focus();
+		}
+		
 		//ball 3 can be a #, a /, or a X; but only in special cases
 		if(isStrike(this.b2) && !isStrike(this.b3)){
 			if(this.b3 == "/" || !nonums.test(this.b3)){
@@ -190,6 +197,9 @@ function validate(frame){
 		if(isStrike(this.b1)) this.ball1.value = "X";
 		if(isStrike(this.b2)) this.ball2.value = "X";
 		if(isStrike(this.b3)) this.ball3.value = "X";
+		
+		//ball3 cannot be blank, it causes trouble for the database.
+		if(this.b3 == "") this.ball3.value = "0";
 	}
 }
 
