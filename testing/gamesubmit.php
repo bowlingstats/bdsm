@@ -3,7 +3,7 @@ include('./header.php');// gets us our connection to the database;
 session_start ();//grab info from cookie
 if($_SESSION['a'] > 0){
 	if($_POST['insert'] == "Save Records") insertDb();
-	if($_POST['edit'] == "Save Changes" && $_POST['game_id']) updateDb();
+	if($_POST['edit'] == "Save Changes" && $_POST['game_id'] && $_SESSION['a'] == 2) updateDb();
 	if($_POST['delete'] == "Delete Game" && $_POST['game_id']) deleteDb();
 } else {
 	print "You must be logged in to use this page.";

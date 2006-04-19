@@ -85,6 +85,7 @@ if($_SESSION['a'] == 2){
 function draw(){
 global $uname;
 ?>
+<center><h1>User Management</h1></center>
 <table style="width: 800px;" border="1">
 <tr>
 	<td valign="top">
@@ -221,6 +222,8 @@ function changeuser(){
 	$r = mysql_query($q) or exit("Query \"$q\" failed.");
 	print "User $username edited successfully.<p/>\n";
 }
+
+include('./footer.php');
 ?>
 
 

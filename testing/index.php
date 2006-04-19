@@ -18,6 +18,8 @@ td.players{
 }
 </style>
 </head>
+<body>
+
 <?
 if($_SESSION['a'] == 2){
 	admin();
@@ -42,7 +44,7 @@ while($a = mysql_fetch_array($r)){
 print "\t</td>\n";
 
 //averages
-$q = "SELECT users.name, ROUND(AVG(games.score)) AS avg FROM users, games WHERE users.uid = games.player_id GROUP BY games.player_id ORDER BY avg DESC";
+$q = "SELECT users.name, ROUND(AVG(games.score)) AS avg FROM users, games WHERE users.uid = games.player_id GROUP BY games.player_id ORDER BY avg DESC LIMIT 10";
 $r = mysql_query($q);
 ?>
 	<td class="hsc" valign="top">
@@ -85,3 +87,6 @@ while($a = mysql_fetch_array($r)){
 	</td>
 </tr>
 </table>
+<?
+include('./footer.php');
+?>

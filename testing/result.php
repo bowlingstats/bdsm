@@ -61,7 +61,10 @@ function scoreGame(){
 		this.b1 = document.getElementById(this.name+'f'+this.frame+'b1').innerHTML;
 		this.b2 = document.getElementById(this.name+'f'+this.frame+'b2').innerHTML;
 		if(this.b2 == "&nbsp;/&nbsp;") this.b2 = "/";
-		if(this.frame == 10) this.b3 = document.getElementById(this.name+'f10b3').innerHTML;
+		if(this.frame == 10){
+			this.b3 = document.getElementById(this.name+'f10b3').innerHTML;
+			if(this.b3 == "&nbsp;/&nbsp;") this.b3 = "/";
+		}
 		
 		if(this.frame != 10){//fill framescore with the first 9 frame's information.
 			if(this.b1 == "X"){
@@ -263,10 +266,10 @@ while($n = mysql_fetch_array($result)){// this creates as html table for each pl
 }
 ?>
 </table>
-</body>
-</html>
 
 <?
 
-}
+}//end of draw
+
+include('./footer.php');
 ?>

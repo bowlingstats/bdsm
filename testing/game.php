@@ -4,6 +4,7 @@ session_start ();//grab info from cookie
 
 function getPlayers(){
 ?>
+	<center><h1>Add A Game</h1></center>
 	<p>
 	<form action="game.php" method="post">
 	Please select the number of players: <select name="numPlayers">
@@ -48,6 +49,8 @@ function choosePlayers($num){
 		document.getElementById("location").innerHTML = "<input type='text'name='location' id='location'>";
 	}
 	</script>
+	
+	<center><h1>Add A Game</h1></center>
 	<?
 	print "<p/><form action=\"game.php\" method=\"post\" onSubmit=\"return val();\">\n";
 	$query = "SELECT name, username FROM users ORDER BY name ASC";
@@ -235,6 +238,6 @@ if($_SESSION['a'] == 2 || $_SESSION['a'] == 1){
 } else{
 	print "You must be logged in to use this page.";
 }
-	?>
-</body>
-</html>
+
+include('./footer.php');
+?>

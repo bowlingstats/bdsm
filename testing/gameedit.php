@@ -220,7 +220,9 @@ while($n = mysql_fetch_array($result)){// this creates as html table for each pl
 <input type="submit" name="edit" value="Save Changes" onClick="<?button()?>return(confirm('Do you wish to commit these scores to the database?'));"> 
 <input type="submit" name="delete" value="Delete Game" onClick="alert('You have clicked Delete Game.'); return(confirm('Do you wish to delete this game from the database?'));">
 </form>
-</body>
-</html>
+
 <?
 }//ends drawGame()
+
+include('./footer.php');
+?>

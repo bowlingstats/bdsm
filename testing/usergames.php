@@ -78,19 +78,19 @@ if($_GET['uid']){
 		<form action="usergames.php" method="GET">
 		<input type="hidden" name="uid" value="<?echo $uid?>">
 		Order By:<select name="orderBy" style="font-size: 0.75em;">
-			<option value="date">Date</option>
-			<option value="score">Score</option>
-			<option value="location">Location</option>
+			<option value="date" <?if($_GET['orderBy'] == "date") echo "selected"?>>Date</option>
+			<option value="score" <?if($_GET['orderBy'] == "score") echo "selected"?>>Score</option>
+			<option value="location" <?if($_GET['orderBy'] == "location") echo "selected"?>>Location</option>
 		</select>
 		<select name="order" style="font-size: 0.75em;">
-			<option value="DESC">Descending</option>
-			<option value="ASC">Ascending</option>
+			<option value="DESC" <?if($_GET['order'] == "DESC") echo "selected"?>>Descending</option>
+			<option value="ASC" <?if($_GET['order'] == "ASC") echo "selected"?>>Ascending</option>
 		</select>
 		Limit to <select name="dispLen" style="font-size: 0.75em;">
-			<option value="15">15</option>
-			<option value="20">20</option>
-			<option value="50">50</option>
-			<option value="All">All</option>
+			<option value="15" <?if($_GET['dispLen'] == "15") echo "selected"?>>15</option>
+			<option value="20" <?if($_GET['dispLen'] == "20") echo "selected"?>>20</option>
+			<option value="50" <?if($_GET['dispLen'] == "50") echo "selected"?>>50</option>
+			<option value="All" <?if($_GET['dispLen'] == "All") echo "selected"?>>All</option>
 		</select> games 
 		<input type="submit" value="Sort Games" style="font-size: 0.75em;">
 		</form><br/>
@@ -105,6 +105,11 @@ if($_GET['uid']){
 		<b>Statistics</b><br/>
 <?
 	//send in the statistics!
+	//Average
+	$q = "SELECT ROUND(AVG(score)) AS avg FROM games WHERE player_id = $uid";
+	$r = mysql_query($q);
+	$stat = mysql_fetch_array($r);
+	print "\t\tAverage: ".$stat[avg]."<br/>\n";
 	//hold onto your hat, the queries get hairy.
 	$q = "SELECT SUM(CASE 1 WHEN b1 = 10 AND b2 = 10 AND b3 = 10 THEN 3 WHEN b1 = 10 AND b2 = 10 AND b3 != 10 THEN 2 WHEN b1 != 10 AND b2 != 10 AND b3 = 10 THEN 1 WHEN b1 = 10 AND b2 != 10 AND b3 != 10 THEN 1 ELSE 0 END) AS strikes FROM scores WHERE player_id = $uid GROUP BY player_id";
 	$r = mysql_query($q);
@@ -274,6 +279,6 @@ function continous($c){
 			break;
 	}
 }//end continous
+
+include('./footer.php');
 ?>
-</body>
-</html>
