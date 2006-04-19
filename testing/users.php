@@ -66,16 +66,21 @@ function editval(){
 <body>
 <?
 //render top bar
-if($_SESSION['a']) admin();
-else user();
+if($_SESSION['a'] == 2){
+	admin();
+} elseif($_SESSION['a'] == 1){
+	user();
+}else{
+	player();
+}
 
-if($_SESSION['a']){
+if($_SESSION['a'] == 2){
 	if($_POST['sub'] == "Add User") adduser();
 	if($_POST['sub'] == "Delete User") deleteuser();
 	if($_POST['sub'] == "Confirm Changes") changeuser();
 	if($_POST['sub'] == "Edit User") edituser();
 	else draw();
-}else print "You must be logged in to use this page.";
+}else print "You do not have sufficient access level to view this page.";
 
 function draw(){
 global $uname;
@@ -90,7 +95,7 @@ global $uname;
 			Password: <input type="password" name="password" id="password"><br/>
 			Confirm Password: <input type="password" name="conf" id="conf"><br/>
 			Name: <input type="text" name="name" id="name"><br/>
-			<input type="radio" name="admin" value="0" checked>Player <input type="radio" name="admin" value="1">Admin<br/>
+			<input type="radio" name="admin" value="0" checked>Player <input type="radio" name="admin" value="1">User <input type="radio" name="admin" value="2">Admin<br/>
 			<input type="submit" name="sub" value="Add User">
 		
 		</form>
@@ -186,8 +191,9 @@ name: <input type="text" id="name" name="name" value="<?echo $row[name]?>"><br/>
 username: <input type="text" id="username" name="username" value="<?echo $row[username]?>"><br/>
 Change Password? <input type="checkbox" name="chpwd"> New Password <input type="password" id="password" name="password"><br/>
 <?
-if($row[admin] == 1) print "Administrator: <input type=\"checkbox\" name=\"admin\" checked><br/>\n";
-else print "Administrator: <input type=\"checkbox\" name=\"admin\"><br/>\n";
+if($row[admin] == 0) print "Class: <input type=\"radio\" name=\"admin\" value=\"0\" checked>player <input type=\"radio\" name=\"admin\" value=\"1\">user <input type=\"radio\" name=\"admin\" value=\"2\">admin<br/>\n";
+elseif($row[admin] == 1) print "Class: <input type=\"radio\" name=\"admin\" value=\"0\">player <input type=\"radio\" name=\"admin\" value=\"1\" checked>user <input type=\"radio\" name=\"admin\" value=\"2\">admin<br/>\n";
+elseif($row[admin] == 2) print "Class: <input type=\"radio\" name=\"admin\" value=\"0\">player <input type=\"radio\" name=\"admin\" value=\"1\">user <input type=\"radio\" name=\"admin\" value=\"2\" checked>admin<br/>\n";
 ?>
 <input type="submit" name="sub" value="Confirm Changes" onClick="return confirm('Save these changes?')">
 </form>
@@ -205,7 +211,8 @@ function changeuser(){
 	}else {
 		$chpwd = 0;
 	}
-	if($_POST['admin']) $admin = 1;
+	if($_POST['admin'] == 1) $admin = 1;
+	elseif($_POST['admin'] == 2) $admin = 2;
 	else $admin = 0;
 	
 	if($chpwd) $q = "UPDATE users SET username = '$username', name = '$name', password = PASSWORD('$password'), admin = $admin WHERE uid = $uid";

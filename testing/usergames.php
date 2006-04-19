@@ -9,8 +9,14 @@ session_start ();//grab info from cookie
 </head>
 <body>
 <?
-if($_SESSION['a']) admin();
-else user();
+if($_SESSION['a'] == 2){
+	admin();
+} elseif($_SESSION['a'] == 1){
+	user();
+}else{
+	player();
+}
+
 //take the GET options for sorting and length and create usable varaiables
 switch($_GET['orderBy']){
 	case "date":

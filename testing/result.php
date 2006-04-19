@@ -2,8 +2,13 @@
 include('./header.php');
 session_start ();//grab info from cookie
 
-if($_SESSION['a']) admin();
-else user();
+if($_SESSION['a'] == 2){
+	admin();
+} elseif($_SESSION['a'] == 1){
+	user();
+}else{
+	player();
+}
 
 if($_GET['game_id']){
 	$game_id = $_GET['game_id'];
@@ -171,7 +176,7 @@ $row = mysql_fetch_row($r);
 ?>
 <center>
 <?print "<font size=\"+1\">".$row[1]."</font><br/><font size=\"+2\">Played at ".$row[0]."</font><br/>\n"?>
-<?if($_SESSION['a']) print "<a href=\"gameedit.php?game_id=$game_id\">edit this game</a>\n<p/>\n";?>
+<?if($_SESSION['a'] == 2) print "<a href=\"gameedit.php?game_id=$game_id\">edit this game</a>\n<p/>\n";?>
 </center>
 <table>
 	<tr>

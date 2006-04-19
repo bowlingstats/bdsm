@@ -1,7 +1,7 @@
 <?
 include('./header.php');
 session_start ();//grab info from cookie
-if($_SESSION['a']){
+if($_SESSION['a'] == 2){//only  admins may edit games.
 	if($_GET['game_id']){
 		$game_id = $_GET['game_id'];
 		admin();
@@ -14,7 +14,9 @@ if($_SESSION['a']){
 		print "No game_id set, nothing to display.";
 	}
 } else{
-	print "You must be logged in to use this page.";
+	if($_SESSION['a'] > 0) user();
+	else player();
+	print "Only administrators may edit games.";
 }
 
 function button(){
@@ -216,7 +218,7 @@ while($n = mysql_fetch_array($result)){// this creates as html table for each pl
 
 </table>
 <input type="submit" name="edit" value="Save Changes" onClick="<?button()?>return(confirm('Do you wish to commit these scores to the database?'));"> 
-<input type="submit" name="delete" value="Delete Game" onClick="return(confirm('Do you wish to delete this game from the database?'));">
+<input type="submit" name="delete" value="Delete Game" onClick="alert('You have clicked Delete Game.'); return(confirm('Do you wish to delete this game from the database?'));">
 </form>
 </body>
 </html>

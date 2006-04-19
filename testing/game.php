@@ -209,13 +209,16 @@ input.frame{
 <body>
 <?
 //draw links heading
-if($_SESSION['a']){
+if($_SESSION['a'] == 2){
 	admin();
-} else{
+} elseif($_SESSION['a'] == 1){
 	user();
+}else{
+	player();
 }
 //Auth user and draw appropriately.
-if($_SESSION['a']){
+//if admin or user they can add a game.
+if($_SESSION['a'] == 2 || $_SESSION['a'] == 1){
   
 	
 	if($_GET['numPlayers']){

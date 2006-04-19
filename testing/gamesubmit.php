@@ -1,7 +1,7 @@
 <?
 include('./header.php');// gets us our connection to the database;
 session_start ();//grab info from cookie
-if($_SESSION['a']){
+if($_SESSION['a'] > 0){
 	if($_POST['insert'] == "Save Records") insertDb();
 	if($_POST['edit'] == "Save Changes" && $_POST['game_id']) updateDb();
 	if($_POST['delete'] == "Delete Game" && $_POST['game_id']) deleteDb();

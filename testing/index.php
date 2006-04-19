@@ -19,10 +19,12 @@ td.players{
 </style>
 </head>
 <?
-if($_SESSION['a']){
+if($_SESSION['a'] == 2){
 	admin();
-} else{
+} elseif($_SESSION['a'] == 1){
 	user();
+}else{
+	player();
 }
 ?>
 <table border="1" class="main">
@@ -31,13 +33,13 @@ if($_SESSION['a']){
 //list of players
 $q = "SELECT name, uid FROM users ORDER BY name ASC";
 $r = mysql_query($q);
-print "\t<td class=\"players\">\n";
+print "\t<td class=\"players\" valign=\"top\">\n";
 print "<b>Players</b><br/>\n";
 while($a = mysql_fetch_array($r)){
 	list($name, $uid) = $a;
 	print "\t\t<a href=\"usergames.php?uid=$uid\">$name</a><br/>\n";
 }
-print "\t</td valign=\"top\">\n";
+print "\t</td>\n";
 
 //averages
 $q = "SELECT users.name, ROUND(AVG(games.score)) AS avg FROM users, games WHERE users.uid = games.player_id GROUP BY games.player_id ORDER BY avg DESC";
@@ -62,7 +64,7 @@ while($a = mysql_fetch_array($r)){
 print "\t</td>\n";
 
 //high scores
-$q = "SELECT users.name, games.game_id, games.score FROM users, games WHERE users.uid = games.player_id ORDER BY games.score DESC LIMIT 5";
+$q = "SELECT users.name, games.game_id, games.score FROM users, games WHERE users.uid = games.player_id ORDER BY games.score DESC LIMIT 10";
 $r = mysql_query($q);
 ?>
 	<td class="hsc" valign="top">

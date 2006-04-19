@@ -8,7 +8,10 @@ if(!isset($a)){
 
 if($_POST['uname'] && $_POST['pwd']){//1
   if(authorize($_POST['uname'], $_POST['pwd'])){//2
-    $_SESSION['a'] = true;
+    $q = "SELECT admin FROM users WHERE username = '".$_POST['uname']."'";
+	$r = mysql_query($q);
+	$row = mysql_fetch_array($r);
+	$_SESSION['a'] = $row[admin];
     $_SESSION['uname'] = $_POST['uname'];
     header("Location: index.php");
 	exit;
@@ -50,7 +53,7 @@ function dispLogin(){
 }//dispLogin
 
 function authorize($un, $pw){
-  $query = "SELECT username, password FROM users WHERE username = '$un' AND password = password('$pw') AND admin = 1";
+  $query = "SELECT username, password FROM users WHERE username = '$un' AND password = password('$pw') AND admin > 0";
   $result = mysql_query($query);
   $num = mysql_numrows($result);
   if($num == 1){
