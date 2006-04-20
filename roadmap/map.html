@@ -48,16 +48,40 @@ Database Layout:
 		<td>a handle for the bowler</td>
 	</tr>
 	<tr>
+		<td class="table"></td>
+		<td>admin</td>
+		<td>smallint(1)</td>
+		<td>governs what class of user this is</td>
+	</tr>
+	<tr>
 		<td class="table">games</td>
 		<td>game_id</td>
 		<td>smallint(4)</td>
 		<td>id of games played.  used to keep games straight in other tables</td>
 	</tr>
 	<tr>
-		<td></td>
+		<td class="table"></td>
 		<td>player_id</td>
 		<td>small(4)</td>
 		<td>same value as users.uid, used to track individual bowler scores in a game</td>
+	</tr>
+	<tr>
+		<td class="table"></td>
+		<td>score</td>
+		<td>smallint(3)</td>
+		<td>score of the game, for quick reference</td>
+	</tr>
+	<tr>
+		<td class="table"></td>
+		<td>date</td>
+		<td>datetime</td>
+		<td>keeps the date of the game</td>
+	</tr>
+	<tr>
+		<td class="table"></td>
+		<td>location</td>
+		<td>varchar(50)</td>
+		<td>The location the game was played at(eg Suburban Lanes)</td>
 	</tr>
 	<tr>
 		<td class="table">scores</td>
@@ -135,7 +159,14 @@ Database Layout:
 <p>
 Scripts:
 <p>
-
+<b>index</b>: The splash page, lists all users, lists 10 best averages, and 10 best games<
+<p>
+<b>header/footer</b>: Connects to the database, and includes functions useed on each page: player(), user(), admin() creates links at top of pages.
+<p>
+<b>login/logout</b>: Used to create and destory user sessions.
+<p>
+<b>scoring.js</b>: has javascript functions for scoring games as they are entered/edited.
+<p>
 <b>game</b>: Takes a value for how many players are in this game.  Creates a HTML table row with the scoring form inside it.  The form submits to <b>gamesubmit</b>.  The form is verified and scored by JavaScript.
 <p>
 <b>gamesubmit</b>: Inserts, updates, or deletes infromation into the database.
@@ -146,6 +177,10 @@ Scripts:
 <b>result</b>: Takes a value game_id and displays that game in HTML tables.
 <p>
 <b>statistics</b>: Will probably be written in PERL, for it's heavy lifting.  Querys the database, finding statistics for strikes, spares, spare conversions, etc.
+<p>
+<b>usersgames</b>: Takes a value uid and lists games for the player with that uid in the <i>users</i> table.  Allows some sorting, and displays rudimentary statistics.
+<p>
+<b>users</b>: Adds, edits, or deletes users.  When a user is deleted all their games go too.
 <p>
 <b>standings</b>: Ranks users by averages, total pinfall, maybe other criteria.
 <p>
