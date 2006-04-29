@@ -133,7 +133,7 @@ function validate(frame){
 		if(this.b1 == "X"){//if b1 is a X there is no 2nd ball
 			this.ball1.value = "X";
 			this.ball2.value = "";
-			document.getElementById(this.name + "f" + frame + "b2").focus();
+			//document.getElementById(this.name + "f" + frame + "b2").focus();
 			document.getElementById(this.name + "f" + (parseInt(frame)+1) + "b1").focus();
 		} else if(isSpare(this.b1, this.b2)){//if it's a spare b2 should be /
 			this.ball2.value = "/";

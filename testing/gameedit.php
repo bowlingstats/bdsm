@@ -1,7 +1,9 @@
 <?
 include('./header.php');
 session_start ();//grab info from cookie
+
 if($_SESSION['a'] == 2){//only  admins may edit games.
+	//deal with GET and POST or no game_id's
 	if($_GET['game_id']){
 		$game_id = $_GET['game_id'];
 		admin();
@@ -13,22 +15,24 @@ if($_SESSION['a'] == 2){//only  admins may edit games.
 	} else {
 		print "No game_id set, nothing to display.";
 	}
-} else{
+} else{//deal with users who are not logged in or have insufficent privilages
 	if($_SESSION['a'] > 0) user();
 	else player();
 	print "Only administrators may edit games.";
 }
-
+/*button creates a list of javascript commands for each player in this game, it calls the users javascript game class function scoreGame()*/
 function button(){
 	global $game_id;
+	//query get the username and uid for each player in this game with game_id
 	$query = "SELECT users.username, games.player_id FROM users, games WHERE games.game_id =".$game_id." AND users.uid = games.player_id";
 	$result = mysql_query($query);
-	while($n = mysql_fetch_array($result)){// this creates as html table for each player in games.game_id
-		list($name, $id) = $n;//get their name and their UID
+	while($n = mysql_fetch_array($result)){
+		list($name, $id) = $n;//get their username and their UID
 		print "$name.scoreGame();";
-	}	
+	}
 }
 
+/*drawGame() creates a scorecard like the one from games.php, but has the scores that are in the database available to edit.*/
 function drawGame(){
 	global $game_id;
 ?>
@@ -83,6 +87,7 @@ input.day{
 <script type="text/javascript" src="scoring.js">
 </script>
 <script type="text/javascript">
+/*var src, setCust and restore all have to do with setting a custom location.  A user may use setCust, but they may also revert to the origional list using restore()*/
 var src;
 function setCust(){
 	src = document.getElementById("location").innerHTML;
@@ -91,6 +96,8 @@ function setCust(){
 function restore(){
 	document.getElementById("location").innerHTML = src;
 }
+
+//val() makes certain all forms are ship shape before being inserted in to the database.
 function val(){
 	if(parseInt(document.getElementById("year").value) && parseInt(document.getElementById("month").value) && parseInt(document.getElementById("day").value)){
 	} else{
@@ -121,18 +128,21 @@ $row = mysql_fetch_row($r);
 </center>
 
 <form action="gamesubmit.php" method="post" onSubmit="return val()">
+<?//make sure we have the game_id when we go to submit?>
 <input type="hidden" name="game_id" value="<?echo $game_id?>">
 <b>yyyy-mm-dd</b>: <input name="year" id="year" class="year" type="text" maxlength="4" value="<?echo $row[2]?>"> - <input type="text" name="month" id="month" class="month" maxlength= 2 value="<?echo $row[3]?>"> - <input type="text" name="day" id="day" class="day" maxlength="2" value="<?echo $row[4]?>"><br/>
 <?
 print "<b>Location</b>: <span id=\"location\"><select name=\"location\" id=\"loc\" onClick=\"if(this.value == 'custom') setCust();\">\n";
-	$query = "SELECT location, COUNT(location) AS num FROM games WHERE location != \"".$row[0]."\" GROUP BY location ORDER BY num DESC";
-	$result = mysql_query($query);
-	print "\t<option value=\"".$row[0]."\">".$row[0]."</option>\n";
-	while($locArray = mysql_fetch_array($result)){
-		list($loc, $num) = $locArray;
-		print "\t<option value=\"$loc\">$loc</option>\n";
-	}
-	print "\t<option value=\"custom\">Custom:</option>\n</select></span>\n";
+
+//fill out the location <select>>
+$query = "SELECT location, COUNT(location) AS num FROM games WHERE location != \"".$row[0]."\" GROUP BY location ORDER BY num DESC";
+$result = mysql_query($query);
+print "\t<option value=\"".$row[0]."\">".$row[0]."</option>\n";
+while($locArray = mysql_fetch_array($result)){
+	list($loc, $num) = $locArray;
+	print "\t<option value=\"$loc\">$loc</option>\n";
+}
+print "\t<option value=\"custom\">Custom:</option>\n</select></span>\n";
 ?>
 <table>
 	<tr>
@@ -145,10 +155,11 @@ mysql_fetch_array($result) or exit("No game with id $game_id.");
 $query = "SELECT users.username, games.player_id, users.name FROM users, games WHERE games.game_id = $game_id AND users.uid = games.player_id";
 $result = mysql_query($query);
 $playerNum = 0;
-while($n = mysql_fetch_array($result)){// this creates as html table for each player in games.game_id
+
+while($n = mysql_fetch_array($result)){// this creates a row in the table for each player in games.game_id, much like createGrid() in game.php
 	$playerNum++;
 	list($name, $id, $realName) = $n;//get their name and their UID
-	//get the results for each player from games
+	//get the results for each frame for this player from games
 	$q = "SELECT frame, b1, b2, b3 FROM scores WHERE game_id = $game_id AND player_id = $id ORDER BY frame ASC";
 	$r = mysql_query($q);
 	?>
@@ -158,7 +169,7 @@ while($n = mysql_fetch_array($result)){// this creates as html table for each pl
 	<?echo $name?>.finalScore = "";
 	</script>
 	<?
-	while($x = mysql_fetch_array($r)){
+	while($x = mysql_fetch_array($r)){//change the numeric values from the database into bowling symbols of X and /'s
 		list($frame, $b1, $b2, $b3) = $x;
 		if($frame != 10){
 			if($b1 == 10 ) $b1 = "X";
@@ -171,6 +182,7 @@ while($n = mysql_fetch_array($result)){// this creates as html table for each pl
 			if($b2 != 0 && $b1 + $b2 == 10) $b2 = "/";
 			if($b3 != 0 && $b2 + $b3 == 10) $b3 = "/";
 		}
+		//hide the form player$playerNum for when we send the form to gamesubmit.php
 		if($frame == 1) print "\t\t\t\t<td class=\"name\">$realName<input type=\"hidden\" name=\"player$playerNum\" value=\"$id\"></td>\n";
 	?>	
 		<td class="frame">
@@ -187,7 +199,7 @@ while($n = mysql_fetch_array($result)){// this creates as html table for each pl
 				</tr>
 			</table>
 	<?
-		} else {
+		} else {//frame 10 is a speial case having 3 balls.
 	?>
 			<table>
 				<tr>
@@ -209,9 +221,7 @@ while($n = mysql_fetch_array($result)){// this creates as html table for each pl
 	?>
 	</tr>
 	
-	<?
-	
-	
+	<?	
 }
 
 ?>
