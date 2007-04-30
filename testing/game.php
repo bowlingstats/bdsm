@@ -18,7 +18,6 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
 include('./header.php');//connects to database, provides links by user's admin level.
 session_start ();//grab info from cookie
 
@@ -219,6 +218,13 @@ function createGames(){
 	//start the table that will contain the games.
 	print "<table>\n";
 	
+	//first we're going to add frame numbers to the top of this table.
+	print "\t<tr>\n";
+	print "\t\t<th>&nbsp;</th>\n";
+	for($x = 1; $x <= 10; $x++){
+		print "\t\t<th>$x</th>\n";
+	}
+	print "\t</tr>\n";
 	//also create an array $realNames with the same indexing as $players, use this to display names later.
 	foreach($players as $key=>$value){
 		$q = "SELECT name FROM users WHERE username = '$value'";

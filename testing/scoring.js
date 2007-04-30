@@ -1,4 +1,3 @@
-var nonums = /^[0-9]*$/;//regex used to test if something is a number.
 /*
 Bowling Database/Statistics Management
 Copyright (C) 2006 Jason Francis and BD/SM developement team
@@ -18,6 +17,7 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+var nonums = /^[0-9]*$/;//regex used to test if something is a number.
 
 /*Game is our grand daddy object.  Everything goes on inside of an instance of Game.*/
 function Game() {

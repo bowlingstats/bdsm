@@ -18,7 +18,6 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
 include('./header.php');
 session_start ();//grab info from cookie
 
@@ -165,6 +164,16 @@ while($locArray = mysql_fetch_array($result)){
 print "\t<option value=\"custom\">Custom:</option>\n</select></span>\n";
 ?>
 <table>
+<?
+//first we're going to add frame numbers to the top of this table.
+print "\t<tr>\n";
+print "\t\t<th>&nbsp;</th>\n";
+for($x = 1; $x <= 10; $x++){
+	print "\t\t<th>$x</th>\n";
+}
+print "\t</tr>\n";
+?>
+
 	<tr>
 
 <?

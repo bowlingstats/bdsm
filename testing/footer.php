@@ -18,7 +18,6 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
 $end = gettimeofday(true);//get the end time to track how long pages are taking to generate.
 $time = round(($end[usec]-$start[usec])/1000000, 2);
 

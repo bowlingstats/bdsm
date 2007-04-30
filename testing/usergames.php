@@ -18,7 +18,6 @@ License along with this library; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
 include('./header.php');// gets us our connection to the database;
 session_start ();//grab info from cookie
 ?>
@@ -77,10 +76,28 @@ switch($_GET['dispLen']){
 		$dispLen = "15";
 }
 
+	
 //build a table to house information
 if($_GET['uid']){
 	$uid = $_GET['uid'];
 	
+	//assign $startDate and $endDate default values if not assigned
+	//$startDate and $endDate are used to limit queries and statistics between two YYYY-MM-DD dates.
+	if(!$_GET['startDate'] || $_GET['startDate'] == "beginning"){
+		$qDate = "SELECT DATE(date) AS date FROM games WHERE player_id = $uid ORDER BY date ASC LIMIT 1";
+		$rDate = mysql_query($qDate);
+		$startDate = mysql_fetch_array($rDate);
+		$startDate = $startDate[date];
+	}else $startDate = $_GET['startDate'];
+	
+	if(!$_GET['endDate'] || $_GET['endDate'] == "present"){
+		$qDate = "SELECT DATE(date) AS date FROM games WHERE player_id = $uid ORDER BY date DESC LIMIT 1";
+		$rDate = mysql_query($qDate);
+		$endDate = mysql_fetch_array($rDate);
+		$endDate = $endDate[date];
+	}else $endDate = $_GET['endDate'];
+	
+	//Start building the HTML table that houses game/statistic information.
 	$q = "SELECT name FROM users WHERE uid = $uid";
 	$r = mysql_query($q);
 	$n = mysql_fetch_row($r);
@@ -88,9 +105,9 @@ if($_GET['uid']){
 	print "<center><h1>".$n[0]."</h1></center>\n";
 	print "<table style=\"width: 800px;\" border=1>\n<tr>\n\t<td valign=\"top\">\n";
 	if($dispLen == "All"){
-		$q = "SELECT game_id, score, DATE(date), location FROM games WHERE player_id = $uid ORDER BY $orderBy $order";
+		$q = "SELECT game_id, score, DATE(date), location FROM games WHERE player_id = $uid AND DATE(date) >= \"$startDate\" AND DATE(date) <= \"$endDate\" ORDER BY $orderBy $order";
 	}else{
-		$q = "SELECT game_id, score, DATE(date), location FROM games WHERE player_id = $uid ORDER BY $orderBy $order LIMIT $dispLen";
+		$q = "SELECT game_id, score, DATE(date), location FROM games WHERE player_id = $uid AND DATE(date) >= \"$startDate\" AND DATE(date) <= \"$endDate\" ORDER BY $orderBy $order LIMIT $dispLen";
 	}
 	$r = mysql_query($q);
 	print "\t\t<b>Games Played</b>\n";
@@ -112,9 +129,62 @@ if($_GET['uid']){
 			<option value="50" <?if($_GET['dispLen'] == "50") echo "selected"?>>50</option>
 			<option value="All" <?if($_GET['dispLen'] == "All") echo "selected"?>>All</option>
 		</select> games 
+		<br/>
+<?//query the 'games' table to find the dates on which games have been played
+	$qDates = "SELECT DISTINCT DATE(date) AS fDate FROM games WHERE player_id = $uid ORDER BY fDate ASC";
+	$rDates = mysql_query($qDates);
+	
+	//this while loop generates the <option>s for the <select>s startDate and endDate from games.date in the database.
+	//the if()'s checks against submitted values to see if the current value should be selected by default	
+
+	//start defining the default optoins "Beginning" and "Present", respectivly.
+	$optStart = "<option value=\"beginning\" ";
+	if(!$_GET['startDate'] || $_GET['startDate'] == "beginning") $optStart .= "selected";
+	$optStart .= ">Beginning</option>";
+	
+	$optEnd = "<option value=\"present\" ";
+	if(!$_GET['endDate'] || $_GET['endDate'] == "present") $optEnd .= "selected";
+	$optEnd .= ">Present</option>";
+	
+	while($dates = mysql_fetch_array($rDates)){
+		//startDate optoins
+		$optStart .= "\t\t\t<option value=\"".$dates[fDate]."\"";
+		if($_GET['startDate'] == $dates[fDate]) $optStart .= " selected";
+		$optStart .= ">".$dates[fDate]."</option>\n";
+		
+		//endDate optoins
+		$optEnd .= "\t\t\t<option value=\"".$dates[fDate]."\"";
+		if($_GET['endDate'] == $dates[fDate]) $optEnd .= " selected";
+		$optEnd .= ">".$dates[fDate]."</option>\n";
+	}
+?>
+
+		From 
+		<select name="startDate" style="font-size: 0.75em;">		
+<?//print the <option>'s for startDate
+	print $optStart;
+?>
+		</select>
+		
+		To
+		<select name="endDate" style="font-size: 0.75em;">
+<?
+	print $optEnd;
+?>
+		</select>
 		<input type="submit" value="Sort Games" style="font-size: 0.75em;">
 		</form><br/>
 <?	
+	//find the number of games played between startDate and endDate
+	//if more games were played than displayed, let the user know
+	$qNumGames = "SELECT COUNT(game_id) FROM games WHERE player_id = $uid AND DATE(date) >= '$startDate' AND DATE(date) <= '$endDate'";
+	$rNumGames = mysql_query($qNumGames);
+	$numGames = mysql_fetch_array($rNumGames);
+	$numGames = $numGames[0];
+
+	if($dispLen != "All" && $numGames > $dispLen) print "Displaying $dispLen games of $numGames.<br/>\n";
+	print "<br/>\n";
+	
 	while($games = mysql_fetch_array($r)){
 		list($gid, $score, $date, $location) = $games;
 		print"\t\t<a href=\"result.php?game_id=$gid\">Score of $score</a>  at $location, on $date<br/>\n";
@@ -122,23 +192,48 @@ if($_GET['uid']){
 ?>
 	</td>
 	<td valign="top">
-		<b>Statistics</b><br/>
+		<b>Statistics</b>
+		<i><?//say if statistics are Carreer or a timespan.
+		if($_GET['startDate'] == "beginning" && $_GET['endDate'] == "present") print "Career";
+		elseif(!$_GET['startDate'] || !$_GET['endDate']) print "Career";
+		print "($startDate to $endDate)";?></i>
+		<br/>
 <?
+	
+	
 	//send in the statistics!
 	//Average
-	$q = "SELECT ROUND(AVG(score)) AS avg FROM games WHERE player_id = $uid";
+	$q = "SELECT ROUND(AVG(score)) AS avg FROM games WHERE player_id = $uid AND DATE(date) >= '$startDate' AND DATE(date) <= '$endDate'";
 	$r = mysql_query($q);
 	$stat = mysql_fetch_array($r);
 	print "\t\tAverage: ".$stat[avg]."<br/>\n";
+	
+	//games played
+	$q = "SELECT COUNT(game_id) AS games_played FROM games WHERE player_id = $uid  AND DATE(date) >= \"$startDate\" AND DATE(date) <= \"$endDate\"";
+	$r = mysql_query($q);
+	$stat = mysql_fetch_array($r);
+	print "\t\tGames Played: ".$stat[0]."\n\t\t<br/>\n";
+	
+	//strikes
 	//hold onto your hat, the queries get hairy.
-	$q = "SELECT SUM(CASE 1 WHEN b1 = 10 AND b2 = 10 AND b3 = 10 THEN 3 WHEN b1 = 10 AND b2 = 10 AND b3 != 10 THEN 2 WHEN b1 != 10 AND b2 != 10 AND b3 = 10 THEN 1 WHEN b1 = 10 AND b2 != 10 AND b3 != 10 THEN 1 ELSE 0 END) AS strikes FROM scores WHERE player_id = $uid GROUP BY player_id";
+	$q = "SELECT SUM(CASE 1 WHEN scores.b1 = 10 AND scores.b2 = 10 AND scores.b3 = 10 THEN 3 WHEN scores.b1 = 10 AND scores.b2 = 10 AND scores.b3 != 10 THEN 2 
+	WHEN scores.b1 != 10 AND scores.b2 != 10 AND scores.b3 = 10 THEN 1 
+	WHEN scores.b1 = 10 AND scores.b2 != 10 AND scores.b3 != 10 THEN 1 
+	ELSE 0 END) AS strikes 
+	FROM scores INNER JOIN games ON scores.player_id = games.player_id AND scores.game_id = games.game_id
+	WHERE scores.player_id = $uid AND DATE(games.date) >= \"$startDate\" AND DATE(games.date) <= \"$endDate\" GROUP BY scores.player_id";
 	$r = mysql_query($q);
 	$stat = mysql_fetch_row($r);
 	print "\t\tStrikes: ".$stat[0]."\n\t\t<br/>\n";
 	
 	//spare shooting:
-	$q = "SELECT (SELECT COUNT(frame) FROM scores WHERE CASE 1 WHEN frame != 10 AND b1 != 10 AND b1 + b2 = 10 THEN 1 WHEN frame = 10 AND b1!= 10 AND b1 + b2 = 10 THEN 1 WHEN frame = 10 AND b1 = 10 AND b2 != 10 AND b2 + b3 = 10 THEN 1 END AND player_id = $uid) AS spares,
-	(SELECT COUNT(frame) FROM scores WHERE CASE 1 WHEN frame != 10 AND b1 != 10 THEN 1 WHEN frame = 10 AND b1 != 10 THEN 1 WHEN frame = 10 AND b1 = 10 AND b2 != 10 THEN 1 END AND player_id = $uid) AS frames";
+	$q = "SELECT 
+		(SELECT COUNT(scores.frame) 
+		FROM scores INNER JOIN games ON scores.player_id = games.player_id AND scores.game_id = games.game_id
+		WHERE CASE 1 WHEN scores.frame != 10 AND scores.b1 != 10 AND scores.b1 + scores.b2 = 10 THEN 1 WHEN scores.frame = 10 AND scores.b1!= 10 AND scores.b1 + scores.b2 = 10 THEN 1 WHEN scores.frame = 10 AND scores.b1 = 10 AND scores.b2 != 10 AND scores.b2 + scores.b3 = 10 THEN 1 END AND scores.player_id = $uid AND DATE(games.date) >='$startDate' AND DATE(games.date) <='$endDate') AS spares,
+		(SELECT COUNT(scores.frame) 
+		FROM scores INNER JOIN games ON scores.player_id = games.player_id AND scores.game_id = games.game_id
+		WHERE CASE 1 WHEN scores.frame != 10 AND scores.b1 != 10 THEN 1 WHEN scores.frame = 10 AND scores.b1 != 10 THEN 1 WHEN scores.frame = 10 AND scores.b1 = 10 AND scores.b2 != 10 THEN 1 END AND scores.player_id = $uid AND DATE(games.date) >='$startDate' AND DATE(games.date) <='$endDate') AS frames";
 	$r = mysql_query($q);
 	$stat = mysql_fetch_row($r);
 	list($spare, $frame) = $stat;
@@ -146,8 +241,19 @@ if($_GET['uid']){
 	else $percentage = 100;
 	print "\t\tSpare shooting: $spare for $frame($percentage%)\n\t\t<br/>\n";
 	
+	//toal pinfall
+	$q = "SELECT (SUM(scores.b1) + SUM(scores.b2) + SUM(scores.b3)) AS total_pinfall
+		FROM scores INNER JOIN games ON scores.player_id = games.player_id AND scores.game_id = games.game_id
+		WHERE scores.player_id = $uid AND DATE(games.date) >= '$startDate' AND DATE(games.date) <= '$endDate'";
+	$r = mysql_query($q);
+	$stat = mysql_fetch_row($r);
+	print "\t\tTotal Pinfall: ".$stat[0]."\n\t\t<br/>\n";
+	
 	//consecutive strikes:
-	$q = "SELECT DISTINCT(game_id) FROM scores WHERE b1 = 10 AND player_id = $uid";
+	//Jason, don't double take it's more elegant that it seems at first glance.-JF 04/14/07
+	$q = "SELECT DISTINCT(scores.game_id)
+		FROM scores INNER JOIN games ON scores.player_id = games.player_id AND scores.game_id = games.game_id
+		WHERE scores.b1 = 10 AND scores.player_id = $uid AND DATE(games.date) >= '$startDate' AND DATE(games.date) <= '$endDate'";
 	$r = mysql_query($q);
 	//populate an array of games where there are strikes
 	$c = 0;//counter for strikeArray
@@ -162,7 +268,7 @@ if($_GET['uid']){
 	$turkey = 0;
 	$fourb = 0;
 	$fiveb = 0;
-	$sixeb = 0;
+	$sixb = 0;
 	$sevenb = 0;
 	$eightb = 0;
 	$nineb = 0;
@@ -238,31 +344,43 @@ function strikes($gameArray){
 		}
 	}
 	//these conditionals handle the special case of 2nd and 3rd balls in the 10th frame.
+	
+	//catches poults where f9 is a X and f10b1 is a X
 	if($continous == 2 && $gameArray[f10b2] == 9){
 		$poult++;
 		continous($continous);
 		$continous = 0;
-	} elseif($continous == 1 && $gameArray[f10b2] == 10 && $gameArray[f10b3] == 9){
+	}
+	//catches poults that happen in f10
+	if($continous == 1 && $gameArray[f10b2] == 10 && $gameArray[f10b3] == 9){
 		$poult++;
 		$continous += 1;
 		continous($continous);
 		$continous = 0;
-	} elseif($gameArray[f10b2] == 10 && $gameArray[f10b3] == 10){
+	}
+	//catches doubles tha happen in f10
+	if($gameArray[f10b2] == 10 && $gameArray[f10b3] == 10){
 		$continous += 2;
 		continous($continous);
 		$continous = 0;
-	} elseif($continous != 0 && $gameArray[f10b2] == 10){
+	} 
+	//default case for handling f10b2 strikes
+	if($continous != 0 && $gameArray[f10b2] == 10){
 		$continous += 1;
 		continous($continous);
 		$continous = 0;
 	}
-	
+	//catch if f10b1 is a X and f10b2 is not a X
+	if($gameArray[f10b2] != 10){
+		continous($continous);
+		$continous = 0;
+	}
 }//end strikes
 
 //takes the counter from strikes() and increments the count of whatever type of bagger it is.
 function continous($c){
 	global $twelveb, $elevenb, $tenb, $nineb, $eightb, $sevenb, $sixb, $fiveb, $fourb, $turkey, $double;
-	
+
 	switch($c){
 		case 12:
 			$twelveb++;
