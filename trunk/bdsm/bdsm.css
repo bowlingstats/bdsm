@@ -1,0 +1,82 @@
+table{
+	border-collapse: collapse;
+}
+td{
+	border-color: black;
+}
+td.name{
+	border-style: solid;
+	border-width: 2px;
+	text-align: center;
+	font-weight: bold;
+}
+td.frame{
+	border-style: solid;
+	border-width: 2px;
+	padding: 0px;
+}
+td.ball1{
+	text-align: center;
+	width: 33px;
+}
+td.ball2{
+	border-style: solid;
+	border-width: 0px 0px 1px 1px;
+	text-align: center;
+	width: 33px;
+}
+td.ball3{
+	border-style: solid;
+	border-width: 1px;
+	text-align: center;
+	width: 33px;
+}
+td.placeholder{
+	width: 33px;
+}
+td.score{
+	text-align: center;
+}
+td.pins{
+	text-align: center;
+	padding: 2px;
+}
+table.pins{
+	padding: 0px;
+	border-spacing: 0px;
+}
+td.pin{
+	padding: 0px;
+	border-spacing: 0px;
+}
+table.key{
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
+}
+td.keye{
+	border-style: solid;
+	border-width: 1px;
+	text-align: right;
+	padding: 2px;
+}
+td.keyo{
+	border-style: solid;
+	border-width: 1px;
+	text-align: center;
+	padding: 2px;
+}
+input.frame{
+	width:20px;
+	text-align: center;
+}
+input.year{
+	width: 45px;
+}
+input.month{
+	width: 20px;
+}
+input.day{
+	width: 20px;
+}
+
