@@ -1,21 +1,21 @@
 
 Requirements:
 This bowling database doesn't need a whole lot, but you will need:
-PHP version 4 or greater.
-MySQL version 3 or greater.
+  PHP version 4 or greater.
+  MySQL version 3 or greater.
 
 Setup:
-Put the files you've extracted into a folder where your webserver and PHP will be able to use it.
+Put the files you've extracted into a folder where your web server and PHP will be able to use it.
 
-1.) First you will need to log into MySQL as a user who can create databases.  You'll need to pick a name for your database, remember what you pick we'll be giving $sql_db that name later.  Type this at the MySQL command line:
+1.) First you will need to log into MySQL as a user who can create databases.  You'll need to pick a name for your database, remember what you pick we'll be giving header.php's $sql_db that name later.  Type this at the MySQL prompt:
 
-CREATE DATABASE databasename;
+  CREATE DATABASE databasename;
 
 Where "databasename" is the name of your database, I use "bdsm".
 
-2.) Exit MySQL, and at the command line go to the directory where you saved the file "bdsm.sql" you'll need to type:
+2.) Exit MySQL, and at the command line go to the directory where you saved the file "bdsm.sql"(in the database folder of this archive) you'll need to type:
 
-mysql -u username -p databasename < bdsm.sql
+  mysql -u username -h hostname -p databasename < bdsm.sql
 
 3.) Next pull up your favorite text editor, and open the file "header.php".  There are four variables that we'll need to edit $sql_host, $sql_user, $sql_pwd, $sql_db.
 
@@ -27,20 +27,20 @@ Set $sql_pwd to the password for $sql_user
 
 Set $sql_db to "databasename", where databasename is the name of the database you created before.
 
-4.) Now when you open the directory where you installed the PHP scripts.  The first thing you should do is click the "login" link.
+4.) Now when, in your web browser, you open the directory where you installed the PHP scripts(the files in the bdsm folder of this archive).  The first thing you should do is click the "login" link.
 
-Login useing "admin" for username, and "bdsm" for the password.
+Login using "admin" for username, and "bdsm" for the password.
 
 5.) When you imported the database it created one user, Administrator.  It is vital that you change this user's default password.  Click "User Management" and then in the "Edit User" section make sure that "Administrator" is selected, and click the "Edit User" button.
 
 6.) In the "Name:" field enter your name.  In the "Username:" field enter the username of your choice.  Make certain that the "Change Password" box has a check in it, and enter a new password.  Click "Confirm Changes"
 
-You are now ready to start adding users and games.  When you add a user your have three options for what type of user you are adding.
+You are now ready to start adding users and games.  When you add a user you have three options for what type of user you are adding.
 
-Player:  Players can be added to games, and their records are tracked by the database.
+  Player:  Players can be added to games, and their records are tracked by the database.
 
-User:  Users have all the privilages of players and in addition users can add games, but they cannot edit or delete games.
+  User:  Users have all the privilages of players and in addition users can add games, but they cannot edit or delete games.
 
-Admin: Admins have all privilages available.  In addition to the privilages of a user admins may add other users, edit existing users, and delete other users.  Admins can also add, edit, and delete games.
+  Admin: Admins have all privilages available.  In addition to the privilages of a user admins may add other users, edit existing users, and delete other users.  Admins can also add, edit, and delete games.
 
 Have fun bowling.  If you have trouble getting setup, please feel free to contact us through our SourceForge page http://bdsm.sourceforge.net

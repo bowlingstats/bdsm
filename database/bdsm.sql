@@ -22,6 +22,7 @@ CREATE TABLE `games` (
   `game_id` mediumint(4) NOT NULL default '0',
   `player_id` mediumint(4) NOT NULL default '0',
   `score` smallint(3) NOT NULL default '0',
+  `track_pins` tinyint(1) NOT NULL default '0',
   `date` datetime NOT NULL default '0000-00-00 00:00:00',
   `location` varchar(50) NOT NULL default 'Not Specified'
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -45,10 +46,17 @@ DROP TABLE IF EXISTS `pinfall`;
 CREATE TABLE `pinfall` (
   `game_id` mediumint(4) NOT NULL default '0',
   `player_id` mediumint(4) NOT NULL default '0',
-  `frame` smallint(2) NOT NULL default '0',
-  `b1` varchar(20) NOT NULL default '',
-  `b2` varchar(20) NOT NULL default '',
-  `b3` varchar(32) NOT NULL default ''
+  `rack` smallint(2) NOT NULL default '0',
+  `pin1` tinyint(4) default NULL,
+  `pin2` tinyint(4) default NULL,
+  `pin3` tinyint(4) default NULL,
+  `pin4` tinyint(4) default NULL,
+  `pin5` tinyint(4) default NULL,
+  `pin6` tinyint(4) default NULL,
+  `pin7` tinyint(4) default NULL,
+  `pin8` tinyint(4) default NULL,
+  `pin9` tinyint(4) default NULL,
+  `pin10` tinyint(4) default NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
