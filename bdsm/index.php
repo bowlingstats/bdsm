@@ -27,7 +27,7 @@ session_start ();//grab info from cookie
 ?>
 <html>
 <head>
-<title>Bowling Database/Statistics Management(v0.9)</title>
+<title>Bowling Database/Statistics Management(pre alpha)</title>
 <style>
 table.main{
 	width: 800px;

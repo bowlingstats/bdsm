@@ -19,17 +19,67 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 include('./header.php');//connects to database, provides links by user's admin level.
-include('./functions.php');//get the helper functions that game, result, and gameedit share.
 session_start ();//grab info from cookie
 
 ?>
 <html>
 <head>
 <title>Bowling Database/Statistics Management: New Game</title>
-<link rel="stylesheet" type="text/css" href="bdsm.css">
+<style>
+td{
+	border-color: black;
+}
+td.name{
+	border-style: solid;
+	border-width: 2px;
+	text-align: center;
+	font-weight: bold;
+}
+td.frame{
+	border-style: solid;
+	border-width: 2px;
+	padding: 0px;
+}
+td.ball1{
+	text-align: center;
+}
+td.ball2{
+	border-style: solid;
+	border-width: 1px;
+	text-align: center;
+}
+td.ball3{
+	border-style: solid;
+	border-width: 1px;
+	text-align: center;
+}
+td.score{
+	text-align: center;
+}
+table.key{
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
+}
+td.keye{
+	border-style: solid;
+	border-width: 1px;
+	text-align: right;
+	padding: 2px;
+}
+td.keyo{
+	border-style: solid;
+	border-width: 1px;
+	text-align: left;
+	padding: 2px;
+}
+input.frame{
+	width:15px;
+	text-align: center;
+}
+</style>
 <script type="text/javascript" src="scoring.js">
 </script>
-</head>
 <body>
 <?
 //draw links heading
@@ -85,10 +135,38 @@ function getPlayers(){
 $num is the number of players in this game.  It creates a selector box for each player.
 It verifies these form values with javascript, to ensure not duplicate players, before submitting.*/
 function choosePlayers($num){
-?>
+	?>
+	<script>
+	/*val() ensures that the location is not blank, and also that there are no duplicate players*/
+	function val(){
+		namesArray = new Array();
+		if(document.getElementById("location").value == ""){
+			alert("Location cannot be blank.");
+			return false;
+		}
+		//create an array of names from the form's values.
+		for(x = 0; x < document.forms[0].length; x++){
+			namesArray[x] = document.forms[0].elements[x].value;
+		}
+		//go through namesArray, if there are any duplicates notify the users, and return false.
+		for(x = 0; x < namesArray.length; x++){
+			for(n = 0; n <= namesArray.length; n++){
+				if(n != x && namesArray[n] == namesArray[x]){
+					alert("Player "+(x+1)+" and Player "+(n+1)+" are identical.\n A bowler may only occur once in a game.");
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	/*setCust() allows a user to set the location to something custom, it changes the innerHTML of the span tag "location" to a 'text' input instead of a selecter box*/
+	function setCust(){
+		document.getElementById("location").innerHTML = "<input type='text'name='location' id='location'>";
+	}
+	</script>
 	
 	<center><h1>Add A Game</h1></center>
-<?
+	<?
 	print "<p/><form action=\"game.php\" method=\"post\" onSubmit=\"return val();\">\n";
 	//create a list of each players $out is the <options> for each selector box
 	$query = "SELECT name, username FROM users ORDER BY name ASC";
@@ -115,7 +193,7 @@ function choosePlayers($num){
 	}
 	print "\t<option value=\"custom\">Custom:</option>\n</select></span>\n";
 	
-	print "<br/>\n<input type=\"checkbox\" name=\"pins\" checked> Track pinfall for this game?\n<br/>\n";
+	
 	
 	print "<input type=\"submit\"></form>\n";
 }
@@ -157,12 +235,12 @@ function createGames(){
 	//for each player create an instance of the javascript class game.  This way javascript can score the game as it is entered by the user.
 	foreach($players as $key=>$value){
 		$realName = $realNames[$key];
-?>
+		?>
 		<script type="text/javascript">
 		<?echo $value?> = new Game();
 		<?echo $value?>.name = "<?echo $value?>";
 		</script>
-<?
+		<?
 		//start the row of the table for this user, and invoke createGrid() to fill this row
 		print "\t<tr>\n";
 		createGrid($value, $realName, $key+1);
@@ -171,10 +249,8 @@ function createGames(){
 	print "</table>\n";
 	//the end of the table containing the entered games
 	print "<input type=\"submit\" name=\"insert\" value=\"Save Records\">\n</form>\n";
-	
 	//print a key of what characters are valid entries.
-	if(!$_POST['pins'])	print "<p>\n<table class=\"key\">\n<tr>\n<td class=\"keye\"><b>Score</b></td>\n<td class=\"keyo\"><b>Input</b></td>\n</tr><tr>\n<td class=\"keye\">0-9</td>\n<td class=\"keyo\">0-9</td>\n</tr><tr>\n<td class=\"keye\">/(spare)</td>\n<td class=\"keyo\">/</td>\n</tr><tr>\n<td class=\"keye\">X(strike)</td>\n<td class=\"keyo\">X, x, or *</td>\n</tr>\n</table>\n</p>\n";
-	else print "<p>\n<table class=\"key\">\n\t<tr>\n\t\t<td class=\"keye\"><b>Key</b></td>\n\t\t<td class=\"keyo\"><b>Input</b></td>\n\n\t</tr>\n\t<tr>\n\t\t<td class=\"keye\">Hit by 1<sup>st</sup> ball</td>\n\t\t<td class=\"keyo\"><img src=\"images/down.png\"></td>\n\t</tr>\n\t<tr>\n\t\t<td class=\"keye\">Missed by 1<sup>st</sup> ball</td>\n\t\t<td class=\"keyo\"><img src=\"images/ball1.png\"></td>\n\t</tr>\n\t<tr>\n\t\t<td class=\"keye\">Missed by 2<sup>nd</sup> ball</td>\n\t\t<td class=\"keyo\"><img src=\"images/ball2.png\"></td>\n\t</tr>  </table>\n</p>\n";
+	print "<p/><table class=\"key\">\n<tr>\n<td class=\"keye\"><b>Score</b></td>\n<td class=\"keyo\"><b>Input</b></td>\n</tr><tr>\n<td class=\"keye\">0-9</td>\n<td class=\"keyo\">0-9</td>\n</tr><tr>\n<td class=\"keye\">/(spare)</td>\n<td class=\"keyo\">/</td>\n</tr><tr>\n<td class=\"keye\">X(strike)</td>\n<td class=\"keyo\">X, x, or *</td>\n</tr>\n</table>\n";
 }
 
 /*createGrid() generates each set of 10 frames to be entered.
@@ -182,95 +258,42 @@ $name is the username, which is used to invoke their javascript instance of the 
 $realName is used to display the users name on the score sheet
 $playerNum keeps the players in order by number*/
 function createGrid($name, $realName, $playerNum){
-	//first establish if we'll be tracking pinfall
-	if($_POST['pins']) $trackPinfall = 1;
-	else $trackPinfall = 0;
-	print "\t\t<input type=\"hidden\" name=\"pins\" value=\"$trackPinfall\">\n";
-	
 	print "\t\t<td class=\"name\">$realName <input type=\"hidden\" name=\"player$playerNum\" value=\"$name\"></td>\n";
 	//The first 9 frames will all be the same.
 	for($frame = 1; $frame < 10; $frame++){
-?>
+		?>
 		<td class="frame">
-			<table>
-				<tr>
-					<td class="ball1"><input class="frame" autocomplete="off" id="<?print $name."f".$frame."b1"?>" name="<?print $name."f".$frame."b1"?>" maxlength="1" type="text" value="" <?if($trackPinfall) print "readonly"?>></td>
-					<td class="ball2"><input class="frame" autocomplete="off" id="<?print $name."f".$frame."b2"?>" name="<?print $name."f".$frame."b2"?>" maxlength="1" type="text" value ="" onFocus="<?echo $name?>.validate('<?echo $frame?>');" onChange="<?echo $name?>.validate('<?echo $frame?>'); <?echo $name?>.scoreGame();" <?if($trackPinfall) print "readonly"?>></td>
-	<?				// class ball2 gets a border.                                                  turn off anoying autocomplete| id needs to be in the usernamef5b1 format                           name is the same as id                                                                                                                                                                  when leaving b1, validate that it is OK                                                                                 when leaving b2 validate the frame again, and score the game?>
-				</tr>
-				<tr><?//this is where the scores get dropped by javascript's scoreGame()?>
-					<td id="<?print $name."score".$frame?>" class="score" colspan='2'>&nbsp;</td>
-				</tr>
-<?
-		if($trackPinfall){
-?>
-				<tr>
-					<td id="<?print $name."pins".$frame?>" class="pins" colspan='2'>
-						<?drawPins($name, $frame, array(0,0,0,0,0,0,0,0,0,0), 1);//for frames 1-9 the frame is the number of the rack?>
-					</td>
-				</tr>
-<?
-		}//end of if($pinfall == 1)
-?>
-			</table>
-		</td>
-<?
-	}
-	//the 10th frame is a special case having 3 balls.
-?>
-	<td class="frame">
 		<table>
 			<tr>
-				<td class="ball1"><input class="frame" autocomplete="off" id="<?print $name."f".$frame."b1"?>" name="<?print $name."f".$frame."b1"?>" maxlength="1" type="text" value="" <?if($trackPinfall) print "readonly"?>></td>
-				<td class="ball2"><input class="frame" autocomplete="off" id="<?print $name."f".$frame."b2"?>" name="<?print $name."f".$frame."b2"?>" maxlength="1" type="text" value="" onFocus="<?echo $name?>.validate('<?echo $frame?>');" onChange="<?echo $name?>.validate('10'); <?echo $name?>.scoreGame();" <?if($trackPinfall) print "readonly"?>></td>
-				<td class="ball3"><input class="frame" autocomplete="off" id="<?print $name."f".$frame."b3"?>" name="<?print $name."f".$frame."b3"?>" maxlength="1" type="text" value="" onFocus="<?echo $name?>.validate('<?echo $frame?>');" onChange="<?echo $name?>.validate('10'); <?echo $name?>.scoreGame();" <?if($trackPinfall) print "readonly"?>></td>
-				<td class="placeholder"></td><!--a placeholder-->
+				<td class="ball1"><input class="frame" autocomplete="off" id="<?print $name."f".$frame."b1"?>" name="<?print $name."f".$frame."b1"?>" maxlength="1" type="text" value=""></td>
+				<td class="ball2"><input class="frame" autocomplete="off" id="<?print $name."f".$frame."b2"?>" name="<?print $name."f".$frame."b2"?>" maxlength="1" type="text" value ="" onFocus="<?echo $name?>.validate('<?echo $frame?>');" onChange="<?echo $name?>.validate('<?echo $frame?>'); <?echo $name?>.scoreGame();"></td>
+				<?// class ball2 gets a border.                                                  turn off anoying autocomplete| id needs to be in the usernamef5b1 format                           name is the same as id                                                                                                                                                                  when leaving b1, validate that it is OK                                                                                 when leaving b2 validate the frame again, and score the game?>
 			</tr>
-			<tr>
-				<td id="<?print $name."score".$frame?>" class="score" colspan='3'>&nbsp;</td>
-				<input type="hidden" name="<?echo $name?>score" id="<?echo $name?>score">
-<?			//we hid the score javascript got here?>
-			</tr>
-<?
-	$frame = 10;
-	if($trackPinfall){
-?>
-			<tr>
-				<td id="<?print $name."pins".$frame?>" class="pins" colspan='2'>
-<?
-				//draw rack 10
-				drawPins($name, 10, array(0,0,0,0,0,0,0,0,0,0), 1);//for frames 1-9 the frame is the number of the rack
-	}
-	//now make the specail 11th rack
-	$frame = 11;
-	if($trackPinfall){
-?>
-				</td>
-				<td id="<?print $name."pins".$frame?>" class="pins" colspan='2' style="visibility: hidden;">
-<?
-		//draw rack 11
-		drawPins($name, 11, array(0,0,0,0,0,0,0,0,0,0), 1);//for frames 1-9 the frame is the number of the rack
-	}
-?>
-				</td>
-<?
-	//now make the specail 12th rack
-	$frame = 12;
-	if($trackPinfall){
-?>
-				<td id="<?print $name."pins".$frame?>" class="pins" colspan='2' style="visibility: hidden;">
-<?
-		//draw rack 12
-		drawPins($name, 12, array(0,0,0,0,0,0,0,0,0,0), 1);//for frames 1-9 the frame is the number of the rack
-		
-	}
-?>
-				</td>
+			<tr><?//this is where the scores get dropped by javascript's scoreGame()?>
+				<td id="<?print $name."score".$frame?>" class="score" colspan='2'>&nbsp;</td>
 			</tr>
 		</table>
+		</td>
+		<?
+	}
+	//the 10th frame is a special case having 3 balls.
+	?>
+	<td class="frame">
+	<table>
+		<tr>
+			<td class="ball1"><input class="frame" autocomplete="off" id="<?print $name."f".$frame."b1"?>" name="<?print $name."f".$frame."b1"?>" maxlength="1" type="text" value="" ></td>
+			<td class="ball2"><input class="frame" autocomplete="off" id="<?print $name."f".$frame."b2"?>" name="<?print $name."f".$frame."b2"?>" maxlength="1" type="text" value="" onFocus="<?echo $name?>.validate('<?echo $frame?>');" onChange="<?echo $name?>.validate('10'); <?echo $name?>.scoreGame();"></td>
+			<td class="ball3"><input class="frame" autocomplete="off" id="<?print $name."f".$frame."b3"?>" name="<?print $name."f".$frame."b3"?>" maxlength="1" type="text" value="" onFocus="<?echo $name?>.validate('<?echo $frame?>');" onChange="<?echo $name?>.validate('10'); <?echo $name?>.scoreGame();"></td>
+		</tr>
+		<tr>
+			<td id="<?print $name."score".$frame?>" class="score" colspan='3'>&nbsp;</td>
+			<input type="hidden" name="<?echo $name?>score" id="<?echo $name?>score">
+			<?//we hid the score javascript got here?>
+		</tr>
+	</table>
 	</td>
 	
-<?
+	<?
 }
 
 include('./footer.php');
